@@ -1,0 +1,11 @@
+extends layout
+block content
+	include barra
+	</br></br>
+	div.content-article(style='white-space:pre;')
+		article
+			h1 Bienvenido, ¿qué tal su día? </br></br>
+			<center><h2>Repasemos sus últimas visitas médicas</h2></center><br>
+			div.demo-container(ng-app="IndexApp" ng-controller="IndexController")
+				div#gridContainer(dx-data-grid="dataGridOptions")
+

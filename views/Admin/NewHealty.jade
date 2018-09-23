@@ -1,0 +1,21 @@
+extends ../layout
+block content
+	include barraAdmi
+	</br></br>
+	script(src='/javascripts/Admi/NewHealty.js')
+	body.dx-viewport
+		div.content-article(style='white-space:pre;')
+			article
+				h1 Registro de personal de salud <br><br>
+				.Healty-Container(ng-app="RegistroHealtyApp",ng-controller="RegistroHealtyController")
+					.sf-form-container
+						a(href="#", onclick="slideFormContainer('none');"): i.lnr.lnr-cross(aria-hidden="true")
+						.widget-container
+						#form(dx-form="formOptions")
+							<br><br>
+						.SfButtonCreate(dx-button="SfButtonCreate")
+						.SfButtonUpdate(dx-button="SfButtonUpdate")
+					div(dx-button="showFormAux")
+					center: h2 Registro de personal de salud<br>
+					#gridContainer(dx-data-grid="dataGridOptions")
+					

@@ -1,0 +1,10 @@
+extends layout
+block content
+	body.login(ng-app="RegistroApp", ng-controller="RegistroController")
+		.login-page
+			.form(ng-app="RegistroApp", ng-controller="RegistroController")
+				.login-form(action="your-action", ng-submit="onFormSubmit($event)")
+					.widget-container
+						#form(dx-form="formOptions")
+					div.SfButtonCreate(dx-button="SfButtonCreate")
+				

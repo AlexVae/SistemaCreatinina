@@ -1,17 +1,6 @@
 var express = require('express');
 var router = express.Router();
 var underscore=require('underscore');
-var MysqlJson = require('mysql-json');
-var conexion = new MysqlJson({
-    host:'localhost',
-    user:'root',
-    password:'',
-    database:'SistemaCreatinina'
-  });
-  conexion.connect(function(err) {
-  if (err) throw err;
-  console.log(global.number);
-});
 /* GET home page. */
 router.get('/index', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -36,15 +25,15 @@ router.post('/NewHealtyRegistry/HealtyData', function(req, res, next) {
    var correo=req.body.Correo_usuario;
    var DataToVerify={ID_Cedula_Profesional:cedulaProf,Numero_Licencia:licencia,Correo_usuario:correo};
    var query="SELECT * FROM Usuario AS a INNER JOIN PersonalSalud AS b ON a.IdUsuario=b.ID_Personal_Salud INNER JOIN Especialidad AS c ON b.ID_Cedula_Profesional= c.ID_Cedula_Profesional INNER JOIN Tipo AS d ON b.ID_Tipo=d.ID_Tipo";
-  conexion.query(query, function (err, result, fields) {
+  global.conexion.query(query, function (err, result, fields) {
     if (err) throw err;
     if(FindingDuplicateDataInserting(DataToVerify,result)){
      var userToRegister={Nombre_Usuario:req.body.Nombre_Usuario,Apellido_Paterno_usuario:req.body.Apellido_Paterno_usuario,Apellido_Materno_usuario:req.body.Apellido_Materno_usuario,Sexo_usuario:req.body.Sexo_usuario,Estado_Civil_usuario:req.body.Estado_Civil_usuario,Numero_Telefonico_usuario:req.body.Numero_Telefonico_usuario,Numero_Celular_usuario:req.body.Numero_Celular_usuario,Fecha_Nacimiento_usuario:req.body.Fecha_Nacimiento_usuario,Correo_usuario:req.body.Correo_usuario,Contrasena:req.body.Contrasena};
-   conexion.insert('Usuario', userToRegister, function(err, response) {
+   global.conexion.insert('Usuario', userToRegister, function(err, response) {
     if (err) throw err;
     //console.log(response);
     var query='SELECT MAX(IdUsuario) AS MAX FROM Usuario'
-    conexion.query(query, function (err, result, fields) {
+    global.conexion.query(query, function (err, result, fields) {
     if (err) throw err;
     //console.log(result[0].MAX);
     var HealtyPersonalInformation={ID_Personal_Salud:result[0].MAX,ID_Cedula_Profesional:cedulaProf,ID_Tipo:req.body.ID_Tipo};
@@ -101,7 +90,7 @@ var banderaCedula=true,banderaLicencia=true,banderaCorreo=true;
 async function insertingSpeciality(data){
 console.log("especialidad")
 console.log(data);
-conexion.insert('Especialidad', data, function(err, response) {
+global.conexion.insert('Especialidad', data, function(err, response) {
     if (err) throw err;
     console.log("Correcto especialidad insertada");
   });
@@ -111,7 +100,7 @@ conexion.insert('Especialidad', data, function(err, response) {
 async function insertingHealtyPersonal(data){
   console.log("healthy")
    console.log(data);
-conexion.insert('PersonalSalud', data, function(err, response) {
+global.conexion.insert('PersonalSalud', data, function(err, response) {
     if (err) throw err;
     console.log("Información de personal de salud insertada de manera correcta" );
   });
@@ -119,7 +108,7 @@ conexion.insert('PersonalSalud', data, function(err, response) {
 //GETTING ALL DATA FROM MEDICAL PERSONAL
 router.get('/GetHealtyInformation', function(req, res, next) {
   var query="SELECT * FROM Usuario AS a INNER JOIN PersonalSalud AS b ON a.IdUsuario=b.ID_Personal_Salud INNER JOIN Especialidad AS c ON b.ID_Cedula_Profesional= c.ID_Cedula_Profesional INNER JOIN Tipo AS d ON b.ID_Tipo=d.ID_Tipo";
-  conexion.query(query, function (err, result, fields) {
+  global.conexion.query(query, function (err, result, fields) {
     if (err) throw err;
     res.json(result);
 });
@@ -131,12 +120,12 @@ router.post('/UpdateHealtyPersonalInformation/HealtyData', function(req, res, ne
    var CompleteData=req.body;
    //var userToRegister={Nombre_Usuario:req.body.Nombre_Usuario,Apellido_Paterno_usuario:req.body.Apellido_Paterno_usuario,Apellido_Materno_usuario:req.body.Apellido_Materno_usuario,Sexo_usuario:req.body.Sexo_usuario,Estado_Civil_usuario:req.body.Estado_Civil_usuario,Numero_Telefonico_usuario:req.body.Numero_Telefonico_usuario,Numero_Celular_usuario:req.body.Numero_Celular_usuario,Fecha_Nacimiento_usuario:req.body.Fecha_Nacimiento_usuario,Correo_usuario:req.body.Correo_usuario,Contrasena:req.body.Contrasena};
    var query="SELECT * FROM Usuario AS a INNER JOIN PersonalSalud AS b ON a.IdUsuario=b.ID_Personal_Salud INNER JOIN Especialidad AS c ON b.ID_Cedula_Profesional= c.ID_Cedula_Profesional INNER JOIN Tipo AS d ON b.ID_Tipo=d.ID_Tipo";
-  conexion.query(query, function (err, result, fields) {
+  global.conexion.query(query, function (err, result, fields) {
     if (err) throw err;
     if(FindingDuplicateData(CompleteData,result)){
         //
     var userToUpdate={Nombre_Usuario:CompleteData.Nombre_Usuario,Apellido_Paterno_usuario:CompleteData.Apellido_Paterno_usuario,Apellido_Materno_usuario:CompleteData.Apellido_Materno_usuario,Sexo_usuario:CompleteData.Sexo_usuario,Estado_Civil_usuario:CompleteData.Estado_Civil_usuario,Numero_Telefonico_usuario:CompleteData.Numero_Telefonico_usuario,Numero_Celular_usuario:CompleteData.Numero_Celular_usuario,Fecha_Nacimiento_usuario:CompleteData.Fecha_Nacimiento_usuario,Correo_usuario:CompleteData.Correo_usuario,Contrasena:CompleteData.Contrasena};
-   conexion.update('Usuario', userToUpdate,{IdUsuario:{operator:'=', value:CompleteData.IdUsuario}}, function(err, response) {
+   global.conexion.update('Usuario', userToUpdate,{IdUsuario:{operator:'=', value:CompleteData.IdUsuario}}, function(err, response) {
     if (err) throw err;
       UpdateMedicalSpeciality(CompleteData);
       UpdateHealtyPersonalInformation(CompleteData);
@@ -156,7 +145,7 @@ router.post('/UpdateHealtyPersonalInformation/HealtyData', function(req, res, ne
 //Updating medical specialitys
 async function UpdateMedicalSpeciality(DataFromForm){
     var medicalSpeciality={Numero_Licencia:DataFromForm.Numero_Licencia,Nombre_Especialidad:DataFromForm.Nombre_Especialidad,Descripcion_Especialidad:DataFromForm.Descripcion_Especialidad,ID_Cedula_Profesional:DataFromForm.ID_Cedula_Profesional};
-    conexion.update('Especialidad', medicalSpeciality,{ID_Cedula_Profesional:{operator:'=', value:DataFromForm.CacheCedula}}, function(err, response) {
+    global.conexion.update('Especialidad', medicalSpeciality,{ID_Cedula_Profesional:{operator:'=', value:DataFromForm.CacheCedula}}, function(err, response) {
     if (err) throw err;
     console.log("Correcto especialidad actualizada");
     });
@@ -164,7 +153,7 @@ async function UpdateMedicalSpeciality(DataFromForm){
 //Updating Healty personal information
 async function UpdateHealtyPersonalInformation(DataFromForm){
     var HealtyPersonalInformation={ID_Personal_Salud:DataFromForm.IdUsuario,ID_Cedula_Profesional:DataFromForm.ID_Cedula_Profesional,ID_Tipo:DataFromForm.ID_Tipo};
-    conexion.update('PersonalSalud', HealtyPersonalInformation,{ID_Personal_Salud:{operator:'=', value:DataFromForm.IdUsuario}}, function(err, response) {
+    global.conexion.update('PersonalSalud', HealtyPersonalInformation,{ID_Personal_Salud:{operator:'=', value:DataFromForm.IdUsuario}}, function(err, response) {
     if (err) throw err;
     console.log("Correcto, personal salud actualizado");
     });
@@ -231,7 +220,7 @@ router.post('/loginStart/loginData', function(req, res, next) {
    console.log(req.body);
    var query='SELECT * FROM Usuario WHERE Nombre_Usuario='+"'"+username+"'"+" AND Contrasena="+"'"+pass+"'";
    console.log(query);
-  conexion.query(query, function (err, result, fields) {
+  global.conexion.query(query, function (err, result, fields) {
     if (err) throw err;
    var LoginData=underscore.findWhere(result,{Nombre_Usuario:username,Contrasena:pass});
    console.log(LoginData);

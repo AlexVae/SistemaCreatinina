@@ -1,0 +1,42 @@
+extends ../../layout
+block content
+	include ../barraMedi
+	</br></br>
+	script(src='/javascripts/Medico/NewPatient/NewPatient.js')
+	body.dx-viewport
+		div.content-article(style='white-space:pre;')
+			article
+				h1 Registro de pacientes <br><br>
+				.Healty-Container(ng-app="RegistroHealtyApp",ng-controller="RegistroHealtyController")
+					.sf-form-container
+						a(href="#", onclick="slideFormContainer('none');"): i.lnr.lnr-cross(aria-hidden="true")
+						.widget-container
+						#form(dx-form="formOptions")
+							<br><br>
+						<br>
+						.SfButtonCreate(dx-button="SfButtonCreate")
+						.SfButtonUpdate(dx-button="SfButtonUpdate")
+					div(dx-button="showFormAux")
+					.popup(dx-popup="popupEmergency")
+						div(data-options="dxTemplate: { name:'info' }")
+							.sf-form-container
+								a(href="#", onclick="slideFormContainer('none');"): i.lnr.lnr-cross(aria-hidden="true")
+								.widget-container
+								#form(dx-form="EmergencyForm")
+									<br><br>
+								<br>
+								.SfButtonCreate(dx-button="SfButtonCreateEmergency")
+								.SfButtonUpdate(dx-button="SfButtonUpdateEmergency")
+							div(dx-button="showFormAuxEmergency")
+					.popup(dx-popup="popupSafetyInformation")
+						div(data-options="dxTemplate: { name:'info' }")
+							.sf-form-container
+								a(href="#", onclick="slideFormContainer('none');"): i.lnr.lnr-cross(aria-hidden="true")
+								.widget-container
+								#form(dx-form="SafetyForm")
+									<br><br>
+								<br>
+								.SfButtonCreate(dx-button="SfButtonCreateSafety")
+								.SfButtonUpdate(dx-button="SfButtonUpdateSafety")
+							div(dx-button="showFormAuxSafety")
+

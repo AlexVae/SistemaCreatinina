@@ -7,6 +7,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session         = require('express-session'); //Manejo con sesiones
 var indexRouter = require('./routes/index');
+var medicoRouter = require('./routes/medico');
 var usersRouter = require('./routes/users');
 var MysqlJson = require('mysql-json');
 global.conexion = new MysqlJson({
@@ -32,6 +33,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/Healty',medicoRouter);
 app.use(session({'resave':true, 'saveUninitialized' : true, 'secret' : 'Dacomp' })); //Manejo con sesiones
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -350,6 +350,10 @@ $scope.dataGridOptions = {
         },
          paging: {
             pageSize: 3
+        }, searchPanel: {
+            placeholder:"Buscar...",
+            visible: true,
+            highlightCaseSensitive: true
         },
        columns: [{ caption: "Nombre", dataField: "Nombre_Usuario",alignment: 'center' },
              { caption: "Apellido Paterno", dataField: "Apellido_Paterno_usuario",alignment: 'center' },

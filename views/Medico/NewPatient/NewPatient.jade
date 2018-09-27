@@ -19,8 +19,8 @@ block content
 					div(dx-button="showFormAux")
 					.popup(dx-popup="popupEmergency")
 						div(data-options="dxTemplate: { name:'info' }")
-							.sf-form-container
-								a(href="#", onclick="slideFormContainer('none');"): i.lnr.lnr-cross(aria-hidden="true")
+							.sf-form-container1
+								a(href="#", onclick="slideFormContainer('none1');"): i.lnr.lnr-cross(aria-hidden="true")
 								.widget-container
 								#form(dx-form="EmergencyForm")
 									<br><br>
@@ -28,10 +28,11 @@ block content
 								.SfButtonCreate(dx-button="SfButtonCreateEmergency")
 								.SfButtonUpdate(dx-button="SfButtonUpdateEmergency")
 							div(dx-button="showFormAuxEmergency")
+							#gridContainer(dx-data-grid="dataGridEmergency")
 					.popup(dx-popup="popupSafetyInformation")
 						div(data-options="dxTemplate: { name:'info' }")
-							.sf-form-container
-								a(href="#", onclick="slideFormContainer('none');"): i.lnr.lnr-cross(aria-hidden="true")
+							.sf-form-container1
+								a(href="#", onclick="slideFormContainer('none1');"): i.lnr.lnr-cross(aria-hidden="true")
 								.widget-container
 								#form(dx-form="SafetyForm")
 									<br><br>
@@ -39,4 +40,7 @@ block content
 								.SfButtonCreate(dx-button="SfButtonCreateSafety")
 								.SfButtonUpdate(dx-button="SfButtonUpdateSafety")
 							div(dx-button="showFormAuxSafety")
+							#gridContainer(dx-data-grid="dataGridSafety")
+					center: h2 Registro de personal de salud<br>
+					#gridContainer(dx-data-grid="dataGridOptions")
 

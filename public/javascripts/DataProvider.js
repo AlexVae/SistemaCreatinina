@@ -75,13 +75,13 @@ var TypesBloods = [
 { Grupo_Sanguineo: "AB+"}
 
 ]
-var EmergencyContacts=[{PrincipalId:1,Nombre:"Juanita"}]
+var EmergencyContacts=[{IdPrincipalC:"",Nombre:""}]
 var Etnias=[{Etnia: "Blanca"}, {Etnia:"De color"}];
 var Accesos=[{Acceso_Vascular:"Fístula arterio-venosa"},{Acceso_Vascular:"Fístula con prótesis"},{Acceso_Vascular:"Catéter"}];
 var sexo=[{Sexo_usuario: "Masculino"},{Sexo_usuario:"Femenino"}];
 var civilData=[{Estado_Civil_usuario:"Soltero"},{Estado_Civil_usuario:"Divorciado"},{Estado_Civil_usuario:"Casado"}, {Estado_Civil_usuario:"Viudo"}];
 var PersonalData=[{ID_Tipo:1, Descripcion:"Médico"},{ID_Tipo:2, Descripcion:"Enfermero"}];
-var Seguros=[{ID_Numero_Poliza:"123456789"},{ID_Numero_Poliza:"123456780"}];
+var Seguros=[{ID_Numero_Poliza:"",Nombre_Seguradora:""}];
 var Estados= [
   {
     "id": 1,
@@ -287,6 +287,19 @@ function slideFormContainer(display, action) {
         return;
 
     }
+    if (display == "block1") {
+
+        $('.sf-form-container1').css('display', display);
+
+        //var length = $('.sf-form-container').length;
+
+        //console.log($('.sf-form-container')[length-1].style.display = display);
+
+        $('.sf-form-container1').show(500);
+
+        return;
+
+    }
 
     if (display == "none") {
 
@@ -300,24 +313,17 @@ function slideFormContainer(display, action) {
 
     if (display == "none1") {
 
-        $('.popup').hide(500);
+        $('.sf-form-container1').hide(500);
 
         return;
 
     }
 
     $('.sf-form-container').slideToggle();
+    $('.sf-form-container1').slideToggle();
 
 }
-function RefreshDatagrid() {
 
-    var dataGrid = $('#gridContainer').dxDataGrid('instance');
-
-    dataGrid.refresh();
-
-    dataGrid.repaint();
-
-}
 
 //===========================================================================
 
@@ -391,12 +397,46 @@ $.post(AdressFrontServer+'/Healty/NewPatientRegistry/'+'PatientInfo',PatientInfo
      if(data.bandera==false){
      NotificationError("Error: correo de usuario repetido.");
       }else{
-     NotificationSuccess("Registro de paciente correcto: " +data );
+      console.log(data);
+      NotificationSuccess("Registro de paciente correcto: " +data );
       slideFormContainer('none');
       }
       
     }).fail(function () {
          NotificationError("Error al guardar empleado  " + HealtyData.Nombre_Usuario);
+
+    return false;
+    }).always(function () {
+        
+    }); 
+}
+async function CreateNewEmergencyContact(EmergencyInfo){
+  $.post(AdressFrontServer+'/Healty/NewEmergencyContact/'+'EmergencyInfo',EmergencyInfo, function (data) {
+    }).done(function (data) {
+     if(data.bandera==false){
+     NotificationError("Error: número de contacto repetido.");
+      }else{
+     NotificationSuccess("Registro de contacto de emergencia existoso.");
+      slideFormContainer('none1');
+      }
+      
+    }).fail(function () {
+         NotificationError("Error al guardar empleado  " + HealtyData.Nombre_Usuario);
+
+    return false;
+    }).always(function () {
+        
+    }); 
+}
+async function GettingAllEmergencyData(ID){
+  var ToFind={ID_Paciente:ID};
+   $.post(AdressFrontServer+'/Healty/GetAllEmergencyInformation/'+'ToFind',ToFind, function (data) {
+    }).done( function (data) {
+        console.log(data);
+        subformInstance._editorInstancesByField.ID_Contacto_Emergencia.option("items", data);
+        return data;
+    }).fail(function () {
+         NotificationError("Error al guardar empleado  " );
 
     return false;
     }).always(function () {

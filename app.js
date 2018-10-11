@@ -8,8 +8,11 @@ var logger = require('morgan');
 var session         = require('express-session'); //Manejo con sesiones
 var indexRouter = require('./routes/index');
 var medicoRouter = require('./routes/medico');
+var enfermeroRouter = require('./routes/enfermero');
 var usersRouter = require('./routes/users');
-var MysqlJson = require('mysql-json');
+var jquery= require('jquery');
+/*var MysqlJson = require('mysql-json');
+
 global.conexion = new MysqlJson({
     host:'localhost',
     user:'root',
@@ -19,7 +22,31 @@ global.conexion = new MysqlJson({
   global.conexion.connect(function(err) {
   if (err) throw err;
 });
+*/
 var app = express();
+/*
+var messages = [{
+  author: "Carlos",
+    text: "Hola! que tal?"
+},{
+  author: "Pepe",
+    text: "Muy bien! y tu??"
+},{
+  author: "Paco",
+    text: "Genial!"
+}];
+var server = require('http').Server(app);
+var io = require('socket.io')(global.server);
+server.listen(8080, function() {
+  console.log('Servidor corriendo en http://localhost:8080');
+});
+io.on('connection', function(socket) {
+  console.log('Un cliente se ha conectado');
+    socket.emit('messages', messages);
+});*/
+
+
+
 //=========Base de datos 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -34,6 +61,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/Healty',medicoRouter);
+app.use('/Nurse',enfermeroRouter);
 app.use(session({'resave':true, 'saveUninitialized' : true, 'secret' : 'Dacomp' })); //Manejo con sesiones
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

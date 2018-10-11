@@ -37,6 +37,16 @@ var dataSource = [{
     cluster: 406
 }];
 
+DevExpress.localization.loadMessages(
+
+{
+
+    en: { "Yes": "Sí","Done": "Listo","Cancel":"Cancelar","Today":"Hoy","October":"Octubre" }
+
+}
+
+);
+
 //SE ELIMINA
 
 var edades = ["18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40"];
@@ -75,13 +85,13 @@ var TypesBloods = [
 { Grupo_Sanguineo: "AB+"}
 
 ]
-var EmergencyContacts=[{IdPrincipalC:"",Nombre:""}]
+var EmergencyContacts=[],HealtyInformation=[],PatientsInformation=[];
 var Etnias=[{Etnia: "Blanca"}, {Etnia:"De color"}];
 var Accesos=[{Acceso_Vascular:"Fístula arterio-venosa"},{Acceso_Vascular:"Fístula con prótesis"},{Acceso_Vascular:"Catéter"}];
 var sexo=[{Sexo_usuario: "Masculino"},{Sexo_usuario:"Femenino"}];
 var civilData=[{Estado_Civil_usuario:"Soltero"},{Estado_Civil_usuario:"Divorciado"},{Estado_Civil_usuario:"Casado"}, {Estado_Civil_usuario:"Viudo"}];
 var PersonalData=[{ID_Tipo:1, Descripcion:"Médico"},{ID_Tipo:2, Descripcion:"Enfermero"}];
-var Seguros=[{ID_Numero_Poliza:"",Nombre_Seguradora:""}];
+var Seguros=[];
 var Estados= [
   {
     "id": 1,
@@ -436,7 +446,66 @@ async function GettingAllEmergencyData(ID){
         subformInstance._editorInstancesByField.ID_Contacto_Emergencia.option("items", data);
         return data;
     }).fail(function () {
-         NotificationError("Error al guardar empleado  " );
+         NotificationError("Error al guardar registro");
+
+    return false;
+    }).always(function () {
+        
+    }); 
+}
+
+async function CreatingNewHealtyInfo(HealtyInfo){
+  $.post(AdressFrontServer+'/Healty/NewHealtyInformation/'+'HealtyInfo',HealtyInfo, function (data) {
+    }).done(function (data) {
+     if(data.bandera==false){
+     NotificationError("Error: número de seguridad social repetido.");
+      }else{
+     NotificationSuccess("Registro de seguridad registrado.");
+      slideFormContainer('none1');
+      }
+      
+    }).fail(function () {
+         NotificationError("Error al guardar registro");
+
+    return false;
+    }).always(function () {
+        
+    }); 
+}
+//===========================UPDATING=========================================
+async function UpdatingPatient(PatientsInfo){
+  $.post(AdressFrontServer+'/Healty//UpdatingPatientsInformation/'+'PatientsInfo',PatientsInfo, function (data) {
+    }).done(function (data) {
+     if(data.bandera==false){
+     NotificationError("Error: correo de usuario repetido.");
+      }else{
+      console.log(data);
+      NotificationSuccess("Registro de paciente correcto: " +data );
+      slideFormContainer('none');
+      }
+      
+    }).fail(function () {
+         NotificationError("Error al guardar empleado  " + HealtyData.Nombre_Usuario);
+
+    return false;
+    }).always(function () {
+        
+    }); 
+
+}
+
+async function UpdatingEmergencyContact(EmergencyInfo){
+  $.post(AdressFrontServer+'/Healty/UpdatingEmergencyContact/'+'EmergencyInfo',EmergencyInfo, function (data) {
+    }).done(function (data) {
+     if(data.bandera==false){
+     NotificationError("Error: número de contacto repetido.");
+      }else{
+     NotificationSuccess("Registro de contacto de emergencia existoso.");
+      slideFormContainer('none1');
+      }
+      
+    }).fail(function () {
+         NotificationError("Error al guardar empleado  " + HealtyData.Nombre_Usuario);
 
     return false;
     }).always(function () {
@@ -444,5 +513,24 @@ async function GettingAllEmergencyData(ID){
     }); 
 }
 //============================================================================
+//==================================Nurse=====================================
+async function SchechtNewMedicalAppointment(SchechInfo){
+    $.post(AdressFrontServer+'/Nurse/NewSchechHealty/'+'SchechInfo',SchechInfo, function (data) {
+    }).done(function (data) {
+     if(data.bandera==false){
+     NotificationError("Error: Hora y/o Fecha de consulta erronea");
+      }else{
+     NotificationSuccess("Registro de consulta correcto.");
+      slideFormContainer('none');
+      }
+      
+    }).fail(function () {
+         NotificationError("Error al guardar registro");
 
+    return false;
+    }).always(function () {
+        
+    }); 
+}
+//============================================================================
 

@@ -1,7 +1,8 @@
 var RegistroHealtyApp = angular.module('RegistroHealtyApp', ['dx']);
 RegistroHealtyApp.controller('RegistroHealtyController', function DemoController($scope,$http) {
     var subformInstance,formInstanceEmergency,formInstanceSafety, healtyData,IDUsuarioCache,CedulaCache,correoCache,licenciaCache,banderaPop=false,Emergency,HealtyInfo,gridInstance=null ,gridInstanceEmergency=null,gridInstanceSafety=null,IdEmergencia=0;
-
+/*setInterval(function(){ gridInstance.refresh();
+                gridInstance.repaint(); }, 3000);*/
     //Formulario de registro nuevo personal de salud
 $scope.formOptions = {
         colCount: 4,
@@ -406,7 +407,7 @@ $scope.formOptions = {
                     noDataText: "No hay datos para mostrar.",
                     searchEnabled: true,
                     items: EmergencyContacts,//CHANGE
-                    displayExpr: "Nombre",
+                    displayExpr: "NameFamily",
                     valueExpr: "ID_Contacto_Emergencia", dropDownButtonTemplate: function (fut) {
                         return $("<button >", { class: "lnr lnr-user" }).on('click', function (evt) {
                          //   formInstance.resetValues();
@@ -808,18 +809,9 @@ $scope.dataGridOptions = {
        columns: [{ caption: "Nombre", dataField: "Nombre_Usuario",alignment: 'center' },
              { caption: "Apellido Paterno", dataField: "Apellido_Paterno_usuario",alignment: 'center' },
              { caption: "Apellido Materno", dataField: "Apellido_Materno_usuario",alignment: 'center' },
-             {
-             caption: "Sexo", dataField:"Sexo_usuario",alignment:"center"
-             },{caption:"Estado civil", dataField:"Estado_Civil_usuario",alignment:"center"},
              {caption:"Teléfono fijo", dataField:"Numero_Telefonico_usuario",alignment:"center"},
-             {caption:"Teléfono celular", dataField:"Numero_Celular_usuario", alignment:"center"},
-             {caption:"Fecha de nacimiento", dataField:"Fecha_Nacimiento_usuario", alignment:"center"},
+             {caption:"Celular", dataField:"Numero_Celular_usuario", alignment:"center"},
              {caption:"Correo", dataField:"Correo_usuario",alignment:"center"},
-             {caption:"Contraseña", dataField:"Contrasena",alignment:"center"},
-             {caption:"Estatura", dataField:"Estatura", alignment:"center"},
-             {caption:"Tipo de sangre", dataField:"Grupo_Sanguineo", alignment:"center"},
-             {caption:"Etnia", dataField:"Etnia",alignment:"center", alignment:"center"},
-             {caption:"Acceso vascular", dataField:"Acceso_Vascular", alignment:"center"},
              {
                 dataField: "Más información o modificar datos",
                 cellTemplate: function (container, options) {
@@ -835,34 +827,15 @@ $scope.dataGridOptions = {
                             refreshingEmergencyBox();
                             refreshingHealtyBox();
                             banderaPop=true;
+                            try{
                             gridInstanceEmergency.refresh();
                             gridInstanceEmergency.repaint();
                             gridInstanceSafety.refresh();
                             gridInstanceSafety.repaint();
-
-                   /*
-                            var ToFind={ID_Paciente:options.data.ID_Paciente};
-                $.post('/Healty/GetAllEmergencyInformation/'+'ToFind',ToFind, function (data) {
-               }).done( function (data) {
-                            Emergency=data;
-                            subformInstance._editorInstancesByField.ID_Contacto_Emergencia.option("items", Emergency);
-                            console.log(gridInstance);
-                            subformInstance.updateData(options.data);
-                            IdEmergencia=options.data.ID_Paciente;
-                            banderaPop=true;
-                            gridInstanceEmergency.refresh();
-                            gridInstanceEmergency.repaint();
-
-                           
-                 }).fail(function () {
-                 NotificationError("Error al guardar empleado  " );
-                 return false;
-                }).always(function () {
-        
-                      }); */
- 
-
-
+                            }catch(err){
+          
+                            }
+                            
                             //
                           /*var Emergency= GettingAllEmergencyData(options.data.ID_Paciente);
                            console.log(Emergency);
@@ -874,7 +847,7 @@ $scope.dataGridOptions = {
                             
                         })
                         .appendTo(container);
-                }
+                },alignment:"center"
 
             }, {
                 dataField: "Eliminar",
@@ -892,7 +865,7 @@ $scope.dataGridOptions = {
 
                         })
                         .appendTo(container);
-                }
+                },alignment:"center"
 
             }],
        showBorders: true
@@ -1055,7 +1028,7 @@ $scope.dataGridSafety = {
        showBorders: true
     };
 
-//Botones formulario principal
+//============================Botones formulario principal==================================
 $scope.SfButtonCreate= {
         text: "Registrar",
         type: "success",
@@ -1084,7 +1057,9 @@ $scope.SfButtonCreate= {
         onClick: function () {
             if (subformInstance.validate().isValid) {
                   var data = subformInstance.option("formData");
-                  
+                  UpdatingPatient(data);
+                  gridInstance.refresh();
+                  gridInstance.repaint();
             }
         }
     };
@@ -1118,7 +1093,10 @@ $scope.SfButtonCreateEmergency={
         onClick: function () {
             if (formInstanceEmergency.validate().isValid) {
                 var data = formInstanceEmergency.option("formData"), bandera = true;
-                alert(data);
+                UpdatingEmergencyContact(data);
+                gridInstanceEmergency.refresh();
+                gridInstanceEmergency.repaint();
+                refreshingEmergencyBox();
                 
             }
         }
@@ -1134,7 +1112,11 @@ $scope.SfButtonCreateSafety={
             
             if (formInstanceSafety.validate().isValid) {
                 var data = formInstanceSafety.option("formData"), bandera = true;
-                console.log(data);
+                data.ID_Paciente=IdEmergencia;
+                CreatingNewHealtyInfo(data);
+                gridInstanceSafety.refresh();
+                gridInstanceEmergency.repaint();
+                refreshingHealtyBox();
             }
         }
 
@@ -1155,7 +1137,7 @@ $scope.SfButtonCreateSafety={
     };
 
 
-
+//=======================================================================================
 //FUNCIONES PARA FORMULARIOS Y SUBFORMULARIOS
 //Refresh the EmergencyContact once that is changed something
 function refreshingEmergencyBox(){
@@ -1185,6 +1167,10 @@ function refreshingEmergencyBox(){
 
         });
                 Emergency=dataToGrid.responseJSON;
+                Emergency.forEach(function(element, index, array) {
+                Emergency[index].NameFamily=element.Nombre+" "+element.Parentesco_Paciente;
+               
+        });
                 subformInstance._editorInstancesByField.ID_Contacto_Emergencia.option("items", Emergency);
  }
 function refreshingHealtyBox(){

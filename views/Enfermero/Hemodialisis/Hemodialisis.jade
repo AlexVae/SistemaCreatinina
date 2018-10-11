@@ -1,0 +1,13 @@
+extends ../../layout
+block content
+	include ../barraEnf
+	</br></br>
+	script(src='/javascripts/Enfermero/Hemodialisis/Hemodialisis.js')
+	body.dx-viewport
+		div.content-article(style='white-space:pre;')
+			article
+				h1 Sesiones de hemodiálisis <br><br>
+				.Nurse-Container(ng-app="HemodialisisApp",ng-controller="HemodialisisController")
+				
+			
+		

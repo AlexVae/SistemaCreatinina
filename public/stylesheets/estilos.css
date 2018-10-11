@@ -14,12 +14,8 @@ header{
     display: none;
     top: 0;
 }
-body {
-  background: -webkit-linear-gradient(right, #e8d8ff, #F5AD9E);
-  background: -moz-linear-gradient(right, #e8d8ff, #F5AD9E);
-  background: -o-linear-gradient(right, #e8d8ff, #F5AD9E);
-  background: linear-gradient(to left, #e8d8ff, #F5AD9E);
-}
+
+
 header label{
     font-size: 40px;
     color: white;
@@ -39,6 +35,13 @@ header label:hover{
 main{
     width: 100%;
     background: #F9565B;
+}
+
+body {
+  background: -webkit-linear-gradient(right, #e8d8ff, #F5AD9E);
+  background: -moz-linear-gradient(right, #e8d8ff, #F5AD9E);
+  background: -o-linear-gradient(right, #e8d8ff, #F5AD9E);
+  background: linear-gradient(to left, #e8d8ff, #F5AD9E);
 }
 
 .login{
@@ -262,7 +265,7 @@ main{
     }
     
     .content-item span{
-        padding: 5px;
+        padding: 20px;
     }
     
     

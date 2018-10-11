@@ -7,7 +7,17 @@
 var app = require('../app');
 var debug = require('debug')('infoblood:server');
 var http = require('http');
+var MysqlJson = require('mysql-json');
 
+global.conexion = new MysqlJson({
+    host:'localhost',
+    user:'root',
+    password:'',
+    database:'SistemaCreatinina'
+  });
+  global.conexion.connect(function(err) {
+  if (err) throw err;
+});
 /**
  * Get port from environment and store in Express.
  */
@@ -19,15 +29,44 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
-
+global.server = http.createServer(app);
+var numberUsers=0;
 /**
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+ var prueba={
+    id:1,
+    text: "Hola soy Alex",
+    author: "Desarrollando en node"
+ };
+
+//global.server.listen(port);
+global.server.listen(3000, function() {
+  console.log('Servidor corriendo en http://localhost:3000');
+});
+var io = require('socket.io')(global.server);
+io.on('connection', function(socket) {
+   var query="SELECT * FROM Usuario";
+  global.conexion.query(query, function (err, result, fields) {
+    io.sockets.emit('messages', result);
+  });
+  numberUsers++;
+  console.log('Un cliente se ha conectado: '+numberUsers);
+  socket.on('disconnect', function() {
+        // Decrease the socket count on a disconnect, emit
+        numberUsers--;
+        console.log("Cliente desconectado: "+numberUsers);
+    })
+  socket.on('new-message', function(data) {
+ // messages.push(data);
+
+  io.sockets.emit('messages', prueba);
+});
+    //socket.emit('messages', messages);
+});
+global.server.on('error', onError);
+global.server.on('listening', onListening);
 
 /**
  * Normalize a port into a number, string, or false.

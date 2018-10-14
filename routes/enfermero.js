@@ -73,11 +73,11 @@ router.get('/Consultas', function(req, res, next) {
 
 //=============================NewRegistrys===========================
 router.post('/NewSchechHealty/SchechInfo', function(req, res, next) {
-	var queryS="SELECT * FROM Citas AS C INNER JOIN Consultas AS CC ON C.ID_Citas=CC.ID_Cita AND CC.Terminado=1 WHERE C.ID_Personal_Salud="+"'"+req.body.IdUsuario+"'";
+	var queryS="SELECT * FROM Citas AS C INNER JOIN Consultas AS CC ON C.ID_Citas=CC.ID_Cita AND CC.Terminado=1";
 	global.conexion.query(queryS,function(err,result,fields){
            if (err) throw err;
-           CheckingExistingDates(req.body,result);
-          /* if(CheckingExistingDates(req.body,result)){
+
+           if(CheckingExistingDates(req.body,result)){
            	if(CheckingLessDates(req.body.Fecha)){
  	console.log(req.body);
       var DateToInsert={ID_Paciente:req.body.ID_Paciente,ID_Personal_Salud:req.body.IdUsuario};
@@ -101,13 +101,41 @@ router.post('/NewSchechHealty/SchechInfo', function(req, res, next) {
 
            }else{
            	res.json({bandera:false});
-           }*/
+           }
 	});
 
 
 });
 
 
+//====================================================================
+//=============================UpdatingData===========================
+  router.post('/UpdatingSchechInformation/SchechInfo', function(req,res,next){
+  	var queryS="SELECT * FROM Citas AS C INNER JOIN Consultas AS CC ON C.ID_Citas=CC.ID_Cita AND CC.Terminado=1";
+	global.conexion.query(queryS,function(err,result,fields){
+		if(err) throw err;
+        if(CheckingExistingDatesUpdating(req.body,result)){
+        	if(CheckingLessDates(req.body.Fecha)){
+        		var DateToUpdate={ID_Paciente:req.body.ID_Paciente,ID_Personal_Salud:req.body.IdUsuario};
+        		var SchetchToUpdate={ID_Cita:req.body.ID_Citas, Fecha:req.body.Fecha,FechaT:req.body.FechaT};
+            global.conexion.update('Citas',DateToUpdate,{ID_Citas:{operator:'=', value:req.body.ID_Citas}}, function(err, response) {
+            if (err) throw err;
+                global.conexion.update('Consultas',SchetchToUpdate,{ID_Consultas:{operator:'=', value:req.body.ID_Consultas}}, function(err, response) {
+            if (err) throw err;
+                 res.json({bandera:true});
+             });
+             });
+
+        	}else{
+        		res.json({bandera:false});
+        	}
+        }else{
+        	res.json({bandera:false});
+        }
+	});
+    
+  });
+  
 //====================================================================
 //==========SupportFunctions==========================================
 function CheckingLessDates(DateToCompare){
@@ -125,26 +153,90 @@ function CheckingLessDates(DateToCompare){
 
 
 }
+
+function CheckingLessDatesUpdate(DateToCompare, AllData){
+ var Today=moment().format('MM-DD-YYYY');
+ var SchechDate=moment(DateToCompare).format('MM-DD-YYYY');
+ var banderaChida=false;
+ var diferencia=moment(Today).diff(moment(SchechDate), 'hours');
+ AllData.forEach(function(element, index, array) {
+    if(element.ID_Cita==DataFromForm.ID_Citas && diferencia==0){
+      banderaChida=true;
+    }
+ });
+
+ //console.log(Today+" "+SchechDate);
+ var bandera=moment(Today).isSameOrBefore(moment(SchechDate));
+ console.log("Bandera Chida: "+banderaChida);
+ //console.log(bandera);
+ if(banderaChida){
+  return true;
+ }else{
+  if(bandera){
+ 	return true;
+ }else{
+ 	return false;
+ }
+ }
+ 
+
+
+}
 //Checking if theres existing dates or differences that could not be possible.
 function CheckingExistingDates(DataFromForm,AllData){
    //var DataToVerify=underscore.findWhere(AllData,{ID_Numero_Poliza:DataFromForm.ID_Numero_Poliza});
-   var bandera=true;
-   AllData.forEach(function(element, index, array) {
+   var bandera=true,banderaChida=true;
+   AllData.every(function(element, index, array) {
           var Schetch=moment(DataFromForm.Fecha).format('MM-DD-YYYY HH:mm');
                 var ToCompare=moment(element.Fecha).format('MM-DD-YYYY HH:mm');
                 var diferencia=moment(ToCompare).diff(moment(Schetch), 'hours');
-                console.log(Schetch+" "+ToCompare)
-              /*  if(diferencia>0){
-                  console.log("No pasas "+Schetch+" "+diferencia);
-                }else if(diferencia<0){
-                	console.log("Si pasas "+" "+Schetch+" "+diferencia);
-                  diferencia=true;
-                }*/
-
+               if(diferencia==0 && DataFromForm.IdUsuario==element.IdUsuario && DataFromForm.ID_Paciente==element.ID_Paciente){
+                  banderaChida=false;
+                }else if(diferencia==0 && DataFromForm.IdUsuario==element.IdUsuario){
+                	banderaChida=false;
+                }else if(diferencia==0 && DataFromForm.ID_Paciente==element.ID_Paciente){
+                	banderaChida=false;
+                }
         });
-   return bandera;
+   if(banderaChida){
+      return true;
+   }else{
+     return false;
+   }
+  
 }
+ function CheckingExistingDatesUpdating(DataFromForm,AllData){
+    var bandera=true,banderaChida=true,banderaMaestra=false;
+    AllData.forEach(function(element, index, array) {
+    	var Schetch=moment(DataFromForm.Fecha).format('MM-DD-YYYY HH:mm');
+    	var ToCompare=moment(element.Fecha).format('MM-DD-YYYY HH:mm');
 
+        var diferencia=moment(ToCompare).diff(moment(Schetch), 'hours');
+       if(element.ID_Cita==DataFromForm.ID_Citas && diferencia==0){
+             banderaChida=true;
+             banderaMaestra=true;
+          }else{
+              if(diferencia==0 && DataFromForm.IdUsuario==element.IdUsuario && DataFromForm.ID_Paciente==element.ID_Paciente){
+                  banderaChida=false;
+                }else if(diferencia==0 && DataFromForm.IdUsuario==element.IdUsuario){
+                	banderaChida=false;
+                }else if(diferencia==0 && DataFromForm.ID_Paciente==element.ID_Paciente){
+                	banderaChida=false;
+                }
+          }
+
+    });
+    if(banderaMaestra){
+    	return true;
+    }else{
+    if(banderaChida){
+      return true;
+    }else{
+     return false;
+   }
+
+    }
+     }
 //==========HARDWARE==================================================
 
 router.get('/HardwareOrder', function(req, res, next) {

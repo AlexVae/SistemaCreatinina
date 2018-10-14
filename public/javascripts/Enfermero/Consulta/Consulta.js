@@ -277,32 +277,6 @@ $scope.SfButtonCreate= {
             if (subformInstance.validate().isValid) {
                 var data = subformInstance.option("formData"), bandera = true;
                 data.FechaT=moment(data.Fecha).add(1, 'hour')._d;
-                /*var Today=moment().format('MM-DD-YYYY');
-                var Schetch=moment(data.Fecha).format('MM-DD-YYYY');
-                console.log(Today+" "+moment(data.Fecha).format('DD-MM-YYYY'));
-                var bandera=moment(Today).isAfter(moment(data.Fecha).format('MM-DD-YYYY'));
-                console.log(bandera);
-                if(Today<=Schetch){
-                  console.log("Fecha válida");
-                }else{
-                  console.log("Fecha inválida");
-                }
-                var Today=moment().format('MM-DD-YYYY HH:mm');
-                var Schetch=moment(data.Fecha).format('MM-DD-YYYY HH:mm');
-                var bandera=moment(Today).isSame(moment(data.Fecha).format('MM-DD-YYYY HH:mm'));
-                console.log(Today+" "+Schetch);
-                var diferencia=moment(Today).diff(moment(Schetch), 'hours');
-                if(diferencia>0){
-                  console.log("No te registro");
-                  console.log(moment(Today).diff(moment(Schetch), 'hours'));
-                }else if(diferencia<0){
-                  console.log("Te registro");
-                  console.log(moment(Today).diff(moment(Schetch), 'hours'));
-                }
-
-                */
-                
-                
                 SchechtNewMedicalAppointment(data);
                 gridInstanceSchet.refresh();
                 gridInstanceSchet.repaint();
@@ -317,7 +291,10 @@ $scope.SfButtonCreate= {
         onClick: function () {
             if (subformInstance.validate().isValid) {
                   var data = subformInstance.option("formData");
-                  console.log(data);
+                  data.FechaT=moment(data.Fecha).add(1, 'hour')._d;
+                  UpdateMedicalAppointment(data);
+                  gridInstanceSchet.refresh();
+                  gridInstanceSchet.repaint();
                  
             }
         }

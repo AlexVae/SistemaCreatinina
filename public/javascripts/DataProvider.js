@@ -532,5 +532,23 @@ async function SchechtNewMedicalAppointment(SchechInfo){
         
     }); 
 }
+async function UpdateMedicalAppointment(SchechInfo){
+    $.post(AdressFrontServer+'/Nurse/UpdatingSchechInformation/'+'SchechInfo',SchechInfo, function (data) {
+    }).done(function (data) {
+     if(data.bandera==false){
+     NotificationError("Error: Hora y/o Fecha de consulta erronea");
+      }else{
+     NotificationSuccess("Registro de consulta correcto.");
+      slideFormContainer('none');
+      }
+      
+    }).fail(function () {
+         NotificationError("Error al guardar registro");
+
+    return false;
+    }).always(function () {
+        
+    }); 
+}
 //============================================================================
 

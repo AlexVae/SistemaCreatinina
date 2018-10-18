@@ -1,0 +1,12 @@
+extends ../../layout
+block content
+	include ../barraMedi
+	</br></br>
+	script(src='/javascripts/Medico/Consulta/Consulta.js')
+	body.dx-viewport
+		div.content-article(style='white-space:pre;')
+			article
+				h1 Mis citas médicas
+				.Healty-Container(ng-app="RegistroConsultaApp",ng-controller="RegistroConsultaController")
+					div(dx-scheduler="schedulerOptions")
+

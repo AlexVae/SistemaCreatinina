@@ -1,13 +1,19 @@
 var express = require('express');
 var router = express.Router();
 var underscore=require('underscore');
-
-//===================================================================New Patient
+var moment= require('moment');
+//=========================Views=============================================
 router.get('/', function(req, res, next) {
   res.render('Medico/indexMedi', { title: 'Bienvenido', otroTexto: 'Medico' });
 });
 router.get('/NewPatient', function(req, res, next) {
   res.render('Medico/NewPatient/NewPatient', { title: 'Bienvenido', otroTexto: 'Medico' });
+});
+router.get('/MySchecht', function(req, res, next) {
+  res.render('Medico/Consultas/Consultas', { title: 'Bienvenido', otroTexto: 'Medico' });
+});
+router.get('/Consulting', function(req, res, next) {
+  res.render('Medico/Consultando/Consultando', { title: 'Bienvenido', otroTexto: 'Medico' });
 });
 //=======================NEW REGISTRY========================================
 router.post('/NewPatientRegistry/PatientInfo', function(req, res, next) {
@@ -146,6 +152,27 @@ router.get('/GettingSafety/:IdUsuario/', function(req, res) {
     res.json(result);
           });
 });
+
+//============================================================================
+//=============================SCHETCHDULER===================================
+router.get('/GetAllAppointInfo',function(req,res,next){
+ var query="SELECT CC.text, CC.startDate, CC.endDate FROM Citas AS C INNER JOIN Consultas AS CC ON C.ID_Citas =CC.ID_Cita WHERE C.ID_Personal_Salud=33 AND CC.Terminado=1";
+ global.conexion.query(query, function (err, result, fields) {
+    if (err) throw err;
+    res.json(result);
+ });
+
+});
+router.get('/GetTodayAppointInfo',function(req,res,next){
+  var Today=moment().format('MM-DD-YYYY');
+ var query="SELECT * FROM Citas AS C INNER JOIN Consultas AS CC ON C.ID_Citas =CC.ID_Cita INNER JOIN Paciente AS P ON C.ID_Paciente=P.ID_Paciente LEFT JOIN Usuario AS U ON C.ID_Paciente=U.IdUsuario WHERE C.ID_Personal_Salud=33 AND CC.Terminado=1 AND CC.Fecha="+"'"+Today+"'";
+ global.conexion.query(query, function (err, result, fields) {
+    if (err) throw err;
+    res.json(result);
+ });
+
+});
+
 //============================================================================
 //=========================================Support functions for patients data
 async function insertingPatient(PatientInformation){

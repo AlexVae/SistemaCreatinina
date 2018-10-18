@@ -11,6 +11,7 @@ var medicoRouter = require('./routes/medico');
 var enfermeroRouter = require('./routes/enfermero');
 var usersRouter = require('./routes/users');
 var jquery= require('jquery');
+var moment= require('moment');
 /*var MysqlJson = require('mysql-json');
 
 global.conexion = new MysqlJson({

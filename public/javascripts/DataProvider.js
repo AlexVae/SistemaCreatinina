@@ -41,7 +41,7 @@ DevExpress.localization.loadMessages(
 
 {
 
-    en: { "Yes": "Sí","Done": "Listo","Cancel":"Cancelar","Today":"Hoy","October":"Octubre" }
+    en: { "Yes": "Sí","Done": "Listo","Cancel":"Cancelar","Today":"Hoy","October":"Octubre", "All day":"Todo el día", "Day":"Día", "Open appointment":"Abrir cita" }
 
 }
 
@@ -512,6 +512,8 @@ async function UpdatingEmergencyContact(EmergencyInfo){
         
     }); 
 }
+//SchetchDuler====================
+
 //============================================================================
 //==================================Nurse=====================================
 async function SchechtNewMedicalAppointment(SchechInfo){

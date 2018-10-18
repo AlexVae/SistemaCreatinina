@@ -47,7 +47,7 @@ $scope.formOptions = {
                 }]//fin de reglas de validación de compañía
             },
             {
-                    dataField: "Fecha",
+                    dataField: "startDate",
                     label: {text:"Fecha de consulta"},
                     editorType: "dxDateBox",
                     editorOptions: {
@@ -131,7 +131,7 @@ $scope.dataGridOptions = {
              { caption: "Apellido paterno paciente", dataField: "Apellido_Paterno_paciente",alignment: 'center' },
              {caption:"Apellido materno paciente", dataField:"Apellido_Materno_paciente",alignment:"center"},
              {caption:"Correo del paciente", dataField:"Correo_paciente", alignment:"center"},
-            
+             {caption:"Fecha de consulta", dataField:"startDate", alignment:"center"},
              {
                 dataField: "Edición",
                 cellTemplate: function (container, options) {
@@ -276,7 +276,10 @@ $scope.SfButtonCreate= {
             
             if (subformInstance.validate().isValid) {
                 var data = subformInstance.option("formData"), bandera = true;
-                data.FechaT=moment(data.Fecha).add(1, 'hour')._d;
+                data.endDate=moment(data.startDate).add(1, 'hour')._d;
+                data.endDate=moment(data.endDate).format('MM-DD-YYYY HH:mm');
+                data.startDate=moment(data.startDate).format('MM-DD-YYYY HH:mm');
+                data.Fecha=moment(data.startDate).format('MM-DD-YYYY');
                 SchechtNewMedicalAppointment(data);
                 gridInstanceSchet.refresh();
                 gridInstanceSchet.repaint();
@@ -291,7 +294,10 @@ $scope.SfButtonCreate= {
         onClick: function () {
             if (subformInstance.validate().isValid) {
                   var data = subformInstance.option("formData");
-                  data.FechaT=moment(data.Fecha).add(1, 'hour')._d;
+                  data.endDate=moment(data.startDate).add(1, 'hour')._d;
+                  data.endDate=moment(data.endDate).format('MM-DD-YYYY HH:mm');
+                  data.startDate=moment(data.startDate).format('MM-DD-YYYY HH:mm');
+                  data.Fecha=moment(data.startDate).format('MM-DD-YYYY');
                   UpdateMedicalAppointment(data);
                   gridInstanceSchet.refresh();
                   gridInstanceSchet.repaint();
@@ -299,7 +305,7 @@ $scope.SfButtonCreate= {
             }
         }
     };
-//======================================================
+//==========================================================================================
 
 
 

@@ -1,0 +1,15 @@
+extends ../../layout
+block content
+	include ../barraMedi
+	</br></br>
+	script(src='/javascripts/Medico/Consultando/Consultando.js')
+	body.dx-viewport
+		div.content-article(style='white-space:pre;')
+			article
+				h1 Mis consultas para hoy
+				.Healty-Container(ng-app="ConsultaApp",ng-controller="ConsultaController")
+					.sf-form-container
+						a(href="#", onclick="slideFormContainer('none');"): i.lnr.lnr-cross(aria-hidden="true")
+						.widget-container
+					div(dx-button="showFormAux")
+					#gridContainer(dx-data-grid="dataGridOptions")

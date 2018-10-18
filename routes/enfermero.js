@@ -37,7 +37,7 @@ router.get('/Consultas', function(req, res, next) {
              	element.Apellido_Paterno_paciente=result[index].Apellido_Paterno_usuario;
              	element.Apellido_Materno_paciente=result[index].Apellido_Materno_usuario;
              	element.Correo_paciente=result[index].Correo_usuario;
-             	//console.log(element.Fecha.getFullYear());
+             	//console.log(element.startDate.getFullYear());
              }   
 
         });
@@ -78,7 +78,7 @@ router.post('/NewSchechHealty/SchechInfo', function(req, res, next) {
            if (err) throw err;
 
            if(CheckingExistingDates(req.body,result)){
-           	if(CheckingLessDates(req.body.Fecha)){
+           	if(CheckingLessDates(req.body.startDate)){
  	console.log(req.body);
       var DateToInsert={ID_Paciente:req.body.ID_Paciente,ID_Personal_Salud:req.body.IdUsuario};
       global.conexion.insert('Citas',DateToInsert, function(err, response) {
@@ -86,10 +86,10 @@ router.post('/NewSchechHealty/SchechInfo', function(req, res, next) {
        var query="SELECT MAX(ID_Citas) AS id FROM Citas";
        global.conexion.query(query, function (err, result, fields) {
          var idToRegister=result[0].id;
-         var SchechToInsert={ID_Cita:idToRegister, Fecha:req.body.Fecha,FechaT:req.body.FechaT};
+         var SchechToInsert={ID_Cita:idToRegister, startDate:req.body.startDate,endDate:req.body.endDate, Fecha:req.body.Fecha};
          global.conexion.insert('Consultas',SchechToInsert, function(err, response) {
           if (err) throw err;
-          CheckingLessDates(SchechToInsert.Fecha);
+          CheckingLessDates(SchechToInsert.startDate);
           res.json({bandera:true})
          });
        });
@@ -115,9 +115,9 @@ router.post('/NewSchechHealty/SchechInfo', function(req, res, next) {
 	global.conexion.query(queryS,function(err,result,fields){
 		if(err) throw err;
         if(CheckingExistingDatesUpdating(req.body,result)){
-        	if(CheckingLessDates(req.body.Fecha)){
+        	if(CheckingLessDates(req.body.startDate)){
         		var DateToUpdate={ID_Paciente:req.body.ID_Paciente,ID_Personal_Salud:req.body.IdUsuario};
-        		var SchetchToUpdate={ID_Cita:req.body.ID_Citas, Fecha:req.body.Fecha,FechaT:req.body.FechaT};
+        		var SchetchToUpdate={ID_Cita:req.body.ID_Citas, startDate:req.body.startDate,endDate:req.body.endDate,Fecha:req.body.Fecha};
             global.conexion.update('Citas',DateToUpdate,{ID_Citas:{operator:'=', value:req.body.ID_Citas}}, function(err, response) {
             if (err) throw err;
                 global.conexion.update('Consultas',SchetchToUpdate,{ID_Consultas:{operator:'=', value:req.body.ID_Consultas}}, function(err, response) {
@@ -187,8 +187,8 @@ function CheckingExistingDates(DataFromForm,AllData){
    //var DataToVerify=underscore.findWhere(AllData,{ID_Numero_Poliza:DataFromForm.ID_Numero_Poliza});
    var bandera=true,banderaChida=true;
    AllData.every(function(element, index, array) {
-          var Schetch=moment(DataFromForm.Fecha).format('MM-DD-YYYY HH:mm');
-                var ToCompare=moment(element.Fecha).format('MM-DD-YYYY HH:mm');
+          var Schetch=moment(DataFromForm.startDate).format('MM-DD-YYYY HH:mm');
+                var ToCompare=moment(element.startDate).format('MM-DD-YYYY HH:mm');
                 var diferencia=moment(ToCompare).diff(moment(Schetch), 'hours');
                if(diferencia==0 && DataFromForm.IdUsuario==element.IdUsuario && DataFromForm.ID_Paciente==element.ID_Paciente){
                   banderaChida=false;
@@ -208,8 +208,8 @@ function CheckingExistingDates(DataFromForm,AllData){
  function CheckingExistingDatesUpdating(DataFromForm,AllData){
     var bandera=true,banderaChida=true,banderaMaestra=false;
     AllData.forEach(function(element, index, array) {
-    	var Schetch=moment(DataFromForm.Fecha).format('MM-DD-YYYY HH:mm');
-    	var ToCompare=moment(element.Fecha).format('MM-DD-YYYY HH:mm');
+    	var Schetch=moment(DataFromForm.startDate).format('MM-DD-YYYY HH:mm');
+    	var ToCompare=moment(element.startDate).format('MM-DD-YYYY HH:mm');
 
         var diferencia=moment(ToCompare).diff(moment(Schetch), 'hours');
        if(element.ID_Cita==DataFromForm.ID_Citas && diferencia==0){

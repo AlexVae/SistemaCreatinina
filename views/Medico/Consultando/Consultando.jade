@@ -11,5 +11,29 @@ block content
 					.sf-form-container
 						a(href="#", onclick="slideFormContainer('none');"): i.lnr.lnr-cross(aria-hidden="true")
 						.widget-container
-					div(dx-button="showFormAux")
+							<br><br><br><br><br>
+					.popup(dx-popup="popupPrincipal")
+						div(data-options="dxTemplate: { name:'info' }")
+							.widget-container
+								#gridContainer(dx-data-grid="dataGridMoreInfo")
+							<br><br>
+							table
+								tr
+									td
+										div(dx-button="showFormAuxClinico")
+									td
+										div(dx-button="showFormAuxSintomas")
+					.popup(dx-popup="popupClinico")
+						div(data-options="dxTemplate: { name:'info' }")
+									.widget-container
+									#form(dx-form="formOptionsC")
+										<br><br>
+									<br>
+									.SfButtonCreate(dx-button="SfButtonCreateClinic")
+					.popup(dx-popup="popupSintomas")
+						div(data-options="dxTemplate: { name:'info' }")
+							.widget-container
+							#form(dx-form="formOptionsSintomas")
+							<br>
+							.SfButtonCreate(dx-button="SfButtonCreateSintomas")
 					#gridContainer(dx-data-grid="dataGridOptions")

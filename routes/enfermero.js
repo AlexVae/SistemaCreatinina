@@ -79,7 +79,6 @@ router.post('/NewSchechHealty/SchechInfo', function(req, res, next) {
 
            if(CheckingExistingDates(req.body,result)){
            	if(CheckingLessDates(req.body.startDate)){
- 	console.log(req.body);
       var DateToInsert={ID_Paciente:req.body.ID_Paciente,ID_Personal_Salud:req.body.IdUsuario};
       global.conexion.insert('Citas',DateToInsert, function(err, response) {
        if (err) throw err;
@@ -186,7 +185,7 @@ function CheckingLessDatesUpdate(DateToCompare, AllData){
 function CheckingExistingDates(DataFromForm,AllData){
    //var DataToVerify=underscore.findWhere(AllData,{ID_Numero_Poliza:DataFromForm.ID_Numero_Poliza});
    var bandera=true,banderaChida=true;
-   AllData.every(function(element, index, array) {
+   AllData.forEach(function(element, index, array) {
           var Schetch=moment(DataFromForm.startDate).format('MM-DD-YYYY HH:mm');
                 var ToCompare=moment(element.startDate).format('MM-DD-YYYY HH:mm');
                 var diferencia=moment(ToCompare).diff(moment(Schetch), 'hours');

@@ -512,8 +512,22 @@ async function UpdatingEmergencyContact(EmergencyInfo){
         
     }); 
 }
-//SchetchDuler====================
+//===============================SchetchDuler=================================
+async function InsertingClinicalInfo(ClinicalInfo){
+  $.post(AdressFrontServer+'/Healty/NewClinicalInformation/'+'ClinicalInfo',ClinicalInfo, function (data) {
+    }).done(function (data) {
+    
+     NotificationSuccess("Registro de información clinica exitosa.");
+     
+      
+    }).fail(function () {
+         NotificationError("Error al guardar empleado  " + HealtyData.Nombre_Usuario);
 
+    return false;
+    }).always(function () {
+        
+    }); 
+}
 //============================================================================
 //==================================Nurse=====================================
 async function SchechtNewMedicalAppointment(SchechInfo){

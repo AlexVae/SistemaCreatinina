@@ -153,6 +153,17 @@ router.get('/GettingSafety/:IdUsuario/', function(req, res) {
           });
 });
 
+router.get('/GettingInfo/:IdUsuario/', function(req, res) {
+   // res.send('Hola ' + req.params.nombre+" "+req.params.nene);
+   var Today=moment().format('MM-DD-YYYY');
+   var query="SELECT * FROM Citas AS C INNER JOIN Consultas AS CC ON C.ID_Citas =CC.ID_Cita INNER JOIN Paciente AS P ON C.ID_Paciente=P.ID_Paciente LEFT JOIN Usuario AS U ON C.ID_Paciente=U.IdUsuario  AND CC.Terminado=1 WHERE U.IdUsuario="+"'"+req.params.IdUsuario+"'"+" AND CC.Fecha="+"'"+Today+"'";
+    global.conexion.query(query, function (err, result, fields) {
+    if(err) throw err; 
+    res.json(result);
+          });
+});
+
+
 //============================================================================
 //=============================SCHETCHDULER===================================
 router.get('/GetAllAppointInfo',function(req,res,next){
@@ -171,6 +182,19 @@ router.get('/GetTodayAppointInfo',function(req,res,next){
     res.json(result);
  });
 
+});
+router.post('/NewClinicalInformation/ClinicalInfo', function(req,res,next){
+  var ClinicalData={AcidoUrico:req.body.AcidoUrico,Urea:req.body.Urea,Trigliceridos:req.body.Trigliceridos,Sodio:req.body.Sodio,RelacionAG:req.body.RelacionAG,ProteinaTotal:req.body.ProteinaTotal,ProteinaC:req.body.ProteinaC,Potasio:req.body.Potasio,BUN:req.body.BUN,LDH:req.body.LDH,Hierro:req.body.Hierro,Glucosa:req.body.Glucosa,Globulinas:req.body.Globulinas,Fosforo:req.body.Fosforo,Creatinina:req.body.Creatinina,Colesterol:req.body.Colesterol,Cloro:req.body.Cloro,CaptacionHierro:req.body.CaptacionHierro,Calcio:req.body.Calcio,Albumina:req.body.Albumina,ID_Consultas:req.body.ID_Consultas};
+  console.log(ClinicalData);
+  global.conexion.insert('AnalisisClinicosC', ClinicalData, function(err, response) {
+    if (err) throw err;
+    res.json({bandera:true});
+    var ToUpdate={Clinicos:1};
+    global.conexion.update('Consultas', ToUpdate,{ID_Consultas:{operator:'=', value:req.body.ID_Consultas}}, function(err, response) {
+    if (err) throw err;
+      res.json({bandera:true});
+      });
+  });
 });
 
 //============================================================================

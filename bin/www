@@ -42,7 +42,7 @@ var numberUsers=0;
  };
 
 //global.server.listen(port);
-global.server.listen(3000, function() {
+global.server.listen(3000, /*'192.168.1.66',*/function() {
   console.log('Servidor corriendo en http://localhost:3000');
 });
 var io = require('socket.io')(global.server);

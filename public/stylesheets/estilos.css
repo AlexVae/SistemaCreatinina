@@ -5,6 +5,16 @@
     font-family: sans-serif;
     list-style: none;
 }
+#box{
+   
+    overflow: auto;
+    direction: rtl;
+    text-align: left;
+    
+}
+#popup {
+    padding: 10px;
+}
 
 header{
     width: 100%;
@@ -231,6 +241,40 @@ body {
     position: relative;
 }
 .sf-form-container1 a{
+    position: absolute;
+    right: 7px;
+    top: 2px;
+    font-size: 17px;
+    color: #0b2a4a;
+    outline: none;
+    text-decoration: none;
+}
+
+.sf-form-container2 {
+    display:none;
+    padding: 15px 6px;
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 2px 1px -1px rgba(0,0,0,.12);
+    margin-bottom: 15px;
+    position: relative;
+}
+.sf-form-container2 a{
+    position: absolute;
+    right: 7px;
+    top: 2px;
+    font-size: 17px;
+    color: #0b2a4a;
+    outline: none;
+    text-decoration: none;
+}
+
+.sf-form-container3 {
+    display:none;
+    padding: 15px 6px;
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 2px 1px -1px rgba(0,0,0,.12);
+    margin-bottom: 15px;
+    position: relative;
+}
+.sf-form-container3 a{
     position: absolute;
     right: 7px;
     top: 2px;

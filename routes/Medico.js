@@ -184,11 +184,10 @@ router.get('/GetTodayAppointInfo',function(req,res,next){
 
 });
 router.post('/NewClinicalInformation/ClinicalInfo', function(req,res,next){
-  var ClinicalData={AcidoUrico:req.body.AcidoUrico,Urea:req.body.Urea,Trigliceridos:req.body.Trigliceridos,Sodio:req.body.Sodio,RelacionAG:req.body.RelacionAG,ProteinaTotal:req.body.ProteinaTotal,ProteinaC:req.body.ProteinaC,Potasio:req.body.Potasio,BUN:req.body.BUN,LDH:req.body.LDH,Hierro:req.body.Hierro,Glucosa:req.body.Glucosa,Globulinas:req.body.Globulinas,Fosforo:req.body.Fosforo,Creatinina:req.body.Creatinina,Colesterol:req.body.Colesterol,Cloro:req.body.Cloro,CaptacionHierro:req.body.CaptacionHierro,Calcio:req.body.Calcio,Albumina:req.body.Albumina,ID_Consultas:req.body.ID_Consultas};
+  var ClinicalData={AcidoUrico:req.body.AcidoUrico,Urea:req.body.Urea,Trigliceridos:req.body.Trigliceridos,Sodio:req.body.Sodio,RelacionAG:req.body.RelacionAG,ProteinaTotal:req.body.ProteinaTotal,ProteinaC:req.body.ProteinaC,Potasio:req.body.Potasio,BUN:req.body.BUN,LDH:req.body.LDH,Hierro:req.body.Hierro,MagnesioEnSangre:req.body.MagnesioEnSangre,Glucosa:req.body.Glucosa,Globulinas:req.body.Globulinas,Fosforo:req.body.Fosforo,Creatinina:req.body.Creatinina,Colesterol:req.body.Colesterol,Cloro:req.body.Cloro,CaptacionHierro:req.body.CaptacionHierro,Calcio:req.body.Calcio,Albumina:req.body.Albumina,ID_Consultas:req.body.ID_Consultas};
   console.log(ClinicalData);
   global.conexion.insert('AnalisisClinicosC', ClinicalData, function(err, response) {
     if (err) throw err;
-    res.json({bandera:true});
     var ToUpdate={Clinicos:1};
     global.conexion.update('Consultas', ToUpdate,{ID_Consultas:{operator:'=', value:req.body.ID_Consultas}}, function(err, response) {
     if (err) throw err;
@@ -197,6 +196,32 @@ router.post('/NewClinicalInformation/ClinicalInfo', function(req,res,next){
   });
 });
 
+router.post('/UpdateClinicalInformation/ClinicalInfo', function(req,res,next){
+  var ClinicalData={AcidoUrico:req.body.AcidoUrico,Urea:req.body.Urea,Trigliceridos:req.body.Trigliceridos,Sodio:req.body.Sodio,RelacionAG:req.body.RelacionAG,ProteinaTotal:req.body.ProteinaTotal,ProteinaC:req.body.ProteinaC,Potasio:req.body.Potasio,BUN:req.body.BUN,LDH:req.body.LDH,Hierro:req.body.Hierro,MagnesioEnSangre:req.body.MagnesioEnSangre,Glucosa:req.body.Glucosa,Globulinas:req.body.Globulinas,Fosforo:req.body.Fosforo,Creatinina:req.body.Creatinina,Colesterol:req.body.Colesterol,Cloro:req.body.Cloro,CaptacionHierro:req.body.CaptacionHierro,Calcio:req.body.Calcio,Albumina:req.body.Albumina,ID_Consultas:req.body.ID_Consultas};
+  global.conexion.update('AnalisisClinicosC', ClinicalData,{ID_Analisis_ClinicosC:{operator:'=', value:req.body.ID_Analisis_ClinicosC}}, function(err, response) {
+    if (err) throw err;
+      res.json({bandera:true});
+      });
+  
+});
+  //GETTING EVERY CLINICAL INFO FROM A PATIENT IN A DETERMINATE SESSION
+router.get('/GettingClinicalInfo/:ID_Consultas/', function(req, res) {
+   // res.send('Hola ' + req.params.nombre+" "+req.params.nene);
+   
+   var query="SELECT * FROM AnalisisClinicosC WHERE ID_Consultas="+"'"+req.params.ID_Consultas+"'";
+    global.conexion.query(query, function (err, result, fields) {
+    if(err) throw err; 
+    res.json(result);
+          });
+});
+//Getting ALL MEDICINE IN SYSTEM
+router.get('/GettingMedicalInfo',function(req, res){
+   var query="SELECT * FROM Medicamento";
+   global.conexion.query(query, function(err, result, fields){
+      if(err) throw err;
+      res.json(result);
+    })
+});
 //============================================================================
 //=========================================Support functions for patients data
 async function insertingPatient(PatientInformation){

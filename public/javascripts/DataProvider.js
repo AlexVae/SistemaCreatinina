@@ -36,7 +36,7 @@ var dataSource = [{
     cnstl: 3,
     cluster: 406
 }];
-
+var decision=[{Op:"Si", valor:"Si"},{Op:"No", valor:"No"}];
 DevExpress.localization.loadMessages(
 
 {
@@ -92,6 +92,7 @@ var sexo=[{Sexo_usuario: "Masculino"},{Sexo_usuario:"Femenino"}];
 var civilData=[{Estado_Civil_usuario:"Soltero"},{Estado_Civil_usuario:"Divorciado"},{Estado_Civil_usuario:"Casado"}, {Estado_Civil_usuario:"Viudo"}];
 var PersonalData=[{ID_Tipo:1, Descripcion:"Médico"},{ID_Tipo:2, Descripcion:"Enfermero"}];
 var Seguros=[];
+var ClinicalInitialData={AcidoUrico:'',Urea:'',Trigliceridos:'',Sodio:'',RelacionAG:'',ProteinaTotal:'',ProteinaC:'',Potasio:'',BUN:'',LDH:'',Hierro:'',Glucosa:'',Globulinas:'',Fosforo:'',Creatinina:'',Colesterol:'',Cloro:'',CaptacionHierro:'',Calcio:'',Albumina:'',ID_Consultas:''};
 var Estados= [
   {
     "id": 1,
@@ -310,7 +311,19 @@ function slideFormContainer(display, action) {
         return;
 
     }
+    if (display == "block3") {
 
+        $('.sf-form-container3').css('display', display);
+
+        //var length = $('.sf-form-container').length;
+
+        //console.log($('.sf-form-container')[length-1].style.display = display);
+
+        $('.sf-form-container3').show(500);
+
+        return;
+
+    }
     if (display == "none") {
 
         //$('.sf-form-container').css('display', display);
@@ -328,9 +341,16 @@ function slideFormContainer(display, action) {
         return;
 
     }
+      if (display == "none3") {
 
+        $('.sf-form-container3').hide(500);
+
+        return;
+
+    }
     $('.sf-form-container').slideToggle();
     $('.sf-form-container1').slideToggle();
+    $('.sf-form-container3').slideToggle();
 
 }
 
@@ -521,7 +541,22 @@ async function InsertingClinicalInfo(ClinicalInfo){
      
       
     }).fail(function () {
-         NotificationError("Error al guardar empleado  " + HealtyData.Nombre_Usuario);
+         NotificationError("Error al guardar datos clinicos");
+
+    return false;
+    }).always(function () {
+        
+    }); 
+}
+async function UpdateClinicalInfo(ClinicalInfo){
+  $.post(AdressFrontServer+'/Healty/UpdateClinicalInformation/'+'ClinicalInfo',ClinicalInfo, function (data) {
+    }).done(function (data) {
+    
+     NotificationSuccess("Registro de información clinica actualizada.");
+     
+      
+    }).fail(function () {
+         NotificationError("Error al guardar datos clinicos");
 
     return false;
     }).always(function () {

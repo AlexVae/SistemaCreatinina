@@ -1,4 +1,4 @@
-var ConsultaApp = angular.module('ConsultaApp', ['dx']),subformInstanceR, Medicines ,gridInstanceSchet=null,gridInstanceClinical=null,gridInstanceInfo, subformInstance,extraMedico,extraPaciente,subformInstanceP,dataToPut,idUsuario,banderaGrids=false,clinicos,ConcultaActual;
+var ConsultaApp = angular.module('ConsultaApp', ['dx']),subformInstanceR, Medicines, Sintomas,gridInstanceRecipes ,gridInstanceSchet=null, gridInstanceSintoma,gridInstanceClinical=null,gridInstanceInfo, subformInstance,extraMedico,extraPaciente,subformInstanceP,dataToPut,idUsuario,banderaGrids=false,clinicos,ConcultaActual,Receta;
 ConsultaApp.controller('ConsultaController', function DemoController($scope,$http) {
 
 //=======================Formulario======================
@@ -384,7 +384,7 @@ ConsultaApp.controller('ConsultaController', function DemoController($scope,$htt
    $scope.formOptionsSintomas={
         colCount: 4,
         labelLocation: "top",
-        validationGroup: "employeesData",
+        validationGroup: "SintomasData",
         onInitialized: function (e) {
             subformInstanceP = e.component;
         },
@@ -400,10 +400,13 @@ ConsultaApp.controller('ConsultaController', function DemoController($scope,$htt
                 editorType: "dxTextArea",
                 editorOptions: {
                     height: 140
-                }, validationRules:[
+                }, validationRules:[{
+                    type: "required",
+                    message: "Introducir síntomas de paciente."
+                },
                    {
                     type: "pattern",
-                    pattern: "^[a-zA-ZñÑóÓáÁéÉíÍúÚ0-9\\s]+$",
+                    pattern: "^[a-zA-ZñÑóÓáÁéÉíÍúÚ0-9,.\\s]+$",
                     message: "No utilizar caracteres especiales."
 
                 }]
@@ -464,40 +467,8 @@ ConsultaApp.controller('ConsultaController', function DemoController($scope,$htt
                 }, validationRules:[
                    {
                     type: "pattern",
-                    pattern: "^[a-zA-ZñÑóÓáÁéÉíÍúÚ0-9\\s]+$",
+                    pattern: "^[a-zA-ZñÑóÓáÁéÉíÍúÚ0-9,.\\s]+$",
                     message: "No utilizar caracteres diferentes especiales."
-
-                }
-                ]
-             }]
-                    }, {
-                        title: "Penisilina",
-                        items: [{
-                dataField: "AlergiaPenisilina",
-                label: { text: "Alergia Penisilina" },
-               editorType: "dxSelectBox",
-                editorOptions: {
-                    placeholder: "Seleccionar...",
-                    noDataText: "No hay datos para mostrar.",
-                    searchEnabled: true,
-                    items: decision,//CHANGE
-                    displayExpr: "Op",
-                    valueExpr: "valor"
-                },validationRules: [{
-                    type: "required",
-                    message: "Contestar lo anterior."
-                }]
-             },{
-               dataField: "AlergiaPenisilinaDescripcion",
-                label: { text: "Descripción" },
-                 editorType: "dxTextArea",
-                editorOptions: {
-                    height: 140
-                }, validationRules:[
-                   {
-                    type: "pattern",
-                    pattern: "^[a-zA-ZñÑóÓáÁéÉíÍúÚ0-9\\s]+$",
-                    message: "No utilizar caracteres especiales."
 
                 }
                 ]
@@ -528,7 +499,7 @@ ConsultaApp.controller('ConsultaController', function DemoController($scope,$htt
                 }, validationRules:[
                    {
                     type: "pattern",
-                    pattern: "^[a-zA-ZñÑóÓáÁéÉíÍúÚ0-9\\s]+$",
+                    pattern: "^[a-zA-ZñÑóÓáÁéÉíÍúÚ0-9,.\\s]+$",
                     message: "No utilizar caracteres especiales."
 
                 }
@@ -560,7 +531,7 @@ ConsultaApp.controller('ConsultaController', function DemoController($scope,$htt
                 }, validationRules:[
                    {
                     type: "pattern",
-                    pattern: "^[a-zA-ZñÑóÓáÁéÉíÍúÚ0-9\\s]+$",
+                    pattern: "^[a-zA-ZñÑóÓáÁéÉíÍúÚ0-9,.\\s]+$",
                     message: "No utilizar caracteres especiales."
 
                 }
@@ -592,7 +563,39 @@ ConsultaApp.controller('ConsultaController', function DemoController($scope,$htt
                 }, validationRules:[
                    {
                     type: "pattern",
-                    pattern: "^[a-zA-ZñÑóÓáÁéÉíÍúÚ0-9\\s]+$",
+                    pattern: "^[a-zA-ZñÑóÓáÁéÉíÍúÚ0-9,.\\s]+$",
+                    message: "No utilizar caracteres especiales."
+
+                }
+                ]
+             }]
+                    }, {
+                        title: "Otras",
+                        items: [{
+                dataField: "AlergiaOtra",
+                label: { text: "Seleccionar si hubo alguna otra alergia" },
+               editorType: "dxSelectBox",
+                editorOptions: {
+                    placeholder: "Seleccionar...",
+                    noDataText: "No hay datos para mostrar.",
+                    searchEnabled: true,
+                    items: decision,//CHANGE
+                    displayExpr: "Op",
+                    valueExpr: "valor"
+                },validationRules: [{
+                    type: "required",
+                    message: "Contestar lo anterior."
+                }]
+             },{
+               dataField: "AlergiaOtraDescripcion",
+                label: { text: "Descripción" },
+                 editorType: "dxTextArea",
+                editorOptions: {
+                    height: 140
+                }, validationRules:[
+                   {
+                    type: "pattern",
+                    pattern: "^[a-zA-ZñÑóÓáÁéÉíÍúÚ0-9,.\\s]+$",
                     message: "No utilizar caracteres especiales."
 
                 }
@@ -612,9 +615,13 @@ ConsultaApp.controller('ConsultaController', function DemoController($scope,$htt
                     height: "300%",
                     width: "200%"
                 }, validationRules:[
+                  {
+                    type: "required",
+                    message: "Introducir alguna recomendación."
+                },
                    {
                     type: "pattern",
-                    pattern: "^[a-zA-ZñÑóÓáÁéÉíÍúÚ0-9,¿?!¡\\s]+$",
+                    pattern: "^[a-zA-ZñÑóÓáÁéÉíÍúÚ0-9,.¿?!¡\\s]+$",
                     message: "No utilizar caracteres especiales."
 
                 }]
@@ -633,13 +640,13 @@ ConsultaApp.controller('ConsultaController', function DemoController($scope,$htt
             {
                 dataField: "ID_Medicamento",
                 label: { text: "Medicamentos recetados" },
-               editorType: "dxTagBox",
+               editorType: "dxSelectBox",
                 editorOptions: {
                     placeholder: "Seleccionar...",
                     noDataText: "No hay datos para mostrar.",
                     searchEnabled: true,
-                    items: Medicines,//CHANGE
-                    displayExpr: "Nombre",
+                    items: Medicinas,//CHANGE
+                    displayExpr: "Nombre_cantidad",
                     valueExpr: "ID_Medicamento"
                 },validationRules: [{
                     type: "required",
@@ -650,8 +657,8 @@ ConsultaApp.controller('ConsultaController', function DemoController($scope,$htt
                 label: { text: "Descripción de receta" },
                  editorType: "dxTextArea",
                 editorOptions: {
-                    height: "200%",
-                    width: "200%"
+                    height: "100%",
+                    width: "90%"
                 }, validationRules:[{
                     type:"required",
                     message:"Es necesario introducir una descripción de los medicamentos recetados"
@@ -661,6 +668,10 @@ ConsultaApp.controller('ConsultaController', function DemoController($scope,$htt
                     pattern: "^[a-zA-ZñÑóÓáÁéÉíÍúÚ0-9,.¿?!¡\\s]+$",
                     message: "No utilizar caracteres especiales."
 
+                },{
+                    type: "stringLength",
+                    min: 15,
+                    message: "Introducir al menos 15 letras de recomendación"
                 }
                 ]
              }
@@ -767,15 +778,19 @@ $scope.showFormAuxReceta = {
         onClick: function (e) {
            // $scope.showInfoR();
            ReturnMedicineInformation();
-           slideFormContainer("block3", "create");
+           subformInstanceR.resetValues();
+           slideFormContainer("block3", "create1");
         }
     };
- $scope.showFormAuxClinico={
+$scope.showFormAuxClinico={
         text: "Datos clínicos",
         icon: 'lnr lnr-users',
         onClick: function (e) {
-           if(clinicos==0)
-            slideFormContainer("block", "create");
+           if(clinicos==0){
+            subformInstance.resetValues();
+          slideFormContainer("block", "create");
+           }
+            
              else{
                  subformInstance.updateData(gridInstanceClinical.getDataSource()._items[0]);
                slideFormContainer("block", "edit"); 
@@ -791,12 +806,18 @@ $scope.showFormAuxReceta = {
  	 text: "Síntomas de paciente",
         icon: 'lnr lnr-users',
         onClick: function (e) {
-        	$scope.showInfoS();
+            if(Sintomas==1){
+             subformInstanceP.updateData(gridInstanceSintoma.getDataSource()._items[0]);
+             slideFormContainer("block2", "edit2");
+            }else{
+              slideFormContainer("block2", "create2");
+            }
+        	
            // $scope.showInfoC();
         }
  }
  $scope.showFormAuxPrueba={
-    text: "Prueba",
+        text: "Prueba",
         icon: 'lnr lnr-users',
         onClick: function (e) {
             $scope.showInfoP();
@@ -847,6 +868,35 @@ $scope.showFormAuxReceta = {
                 },
                 async: false,
                 url: "http://localhost:3000/Healty/GettingInfo/"+idUsuario,
+                data: { symbol: 'ctsh' },
+                dataType: "jsonp",
+                jsonpCallback: 'fnsuccesscallback'
+            })
+                .then(function (response) {
+                   // disableLoader();
+                     //console.log(response.data);
+                    // ConcultaActual=response.data.ID_Consultas; 
+                    return { data: response.data };
+                }, function (response) {
+                    //disableLoader();
+                    //return $q.reject("Data Loading Error");
+                });
+        },
+        remove: function (key) {
+            DeleteProduct(key);
+        }
+    });
+ var Recipes=  new DevExpress.data.CustomStore({
+        load: function () {
+            //showLoader();
+            return $http({
+                crossDomain: true,
+                type: 'GET',
+                headers: {
+                    'Content-Type': undefined
+                },
+                async: false,
+                url: "http://localhost:3000/Healty/GettingActualRecipe/"+ConcultaActual.ID_Consultas,
                 data: { symbol: 'ctsh' },
                 dataType: "jsonp",
                 jsonpCallback: 'fnsuccesscallback'
@@ -924,6 +974,35 @@ $scope.showFormAuxReceta = {
             DeleteProduct(key);
         }
     });
+ var SintomaData=new DevExpress.data.CustomStore({
+        load: function () {
+            //showLoader();
+            return $http({
+                crossDomain: true,
+                type: 'GET',
+                headers: {
+                    'Content-Type': undefined
+                },
+                async: false,
+                url: "http://localhost:3000/Healty/GetAllSintomaData/"+ConcultaActual.ID_Consultas,
+                data: { symbol: 'ctsh' },
+                dataType: "jsonp",
+                jsonpCallback: 'fnsuccesscallback'
+            })
+                .then(function (response) {
+                   // disableLoader();
+                     //console.log(response.data);
+                    // ConcultaActual=response.data.ID_Consultas; 
+                    return { data: response.data };
+                }, function (response) {
+                    //disableLoader();
+                    //return $q.reject("Data Loading Error");
+                });
+        },
+        remove: function (key) {
+            DeleteProduct(key);
+        }
+    });
 //=======================================================
 
 //=======================DataGrid========================
@@ -935,15 +1014,23 @@ $scope.showFormAuxReceta = {
           console.log(e.data);
           ConcultaActual=e.data; 
           idUsuario=e.data.ID_Paciente;
+          Sintomas=e.data.Sintomas1;
+          Receta=e.data.Receta;
           if(banderaGrids){
             gridInstanceInfo.refresh();
             gridInstanceInfo.repaint();
             gridInstanceClinical.refresh();
             gridInstanceClinical.repaint();
+            gridInstanceRecipes.refresh();
+            gridInstanceRecipes.repaint();
+            gridInstanceSintoma.refresh();
+            gridInstanceSintoma.repaint();
           }else{
             banderaGrids=true;
           }
           clinicos=e.data.Clinicos;
+          slideFormContainer('none');
+          slideFormContainer('none3');
           $scope.showInfo();
           dataToPut=e.data;
          // subformInstanceP.updateData(e.data);
@@ -995,8 +1082,8 @@ $scope.showFormAuxReceta = {
             emptyPanelText: "Agrupar",
             visible: "true"
         },
-        columnAutoWeigth: true,
-        columnAutoWidth: true,
+        width: 900,
+        height: 150,
         paging: {
             pageSize: 3
         }, searchPanel: {
@@ -1057,8 +1144,85 @@ $scope.showFormAuxReceta = {
          {caption:"Cloro", dataField:"Cloro", alignment:"center"}, {caption:"Captacion Hierro", dataField:"CaptacionHierro", alignment:"center"},
         {caption:"Calcio", dataField:"Calcio",alignment:"center"}, {caption:"Albumina",dataField:"Albumina",alignment:"center"}
         ], showBorders: true
-        
-};
+    };
+    $scope.dataGridMoreInfoRecetado={
+         dataSource: Recipes,
+         noDataText: "No hay datos de algún medicamento dado de alta.",
+         onInitialized: function (e) {
+            gridInstanceRecipes = e.component;
+            }, onRowClick: function(e){
+            console.log(e.data);
+            subformInstanceR.updateData(e.data);
+            ReturnMedicineInformation();
+            slideFormContainer("block3", "edit1");
+           },
+          columnChooser: {
+            enabled: true,
+            title: 'Selección de columna',
+            emptyPanelText: 'Se arrastra una comlumna aquí'
+           },
+         groupPanel: {
+            emptyPanelText: "Agrupar",
+            visible: "true"
+          },
+          columnAutoWeigth: true,
+          columnAutoWidth: true,
+          paging: {
+            pageSize: 3
+          }, searchPanel: {
+            placeholder:"Buscar...",
+            visible: true,
+            highlightCaseSensitive: true
+          },
+         columns: [
+             { caption: "Medicamentos recetados", dataField: "Nombre_cantidad",alignment: 'center' },
+             { caption: "Recomendaciones de uso", dataField: "Recomendaciones",alignment: 'center' },{
+                dataField: "Eliminar",
+                cellTemplate: function (container, e) {
+                    $("<div>")
+                        .append('<button class="btn btn-default"> <i class="fa fa-trash"></i></button>').on('click', function (evt) {
+                            var result = DevExpress.ui.dialog.confirm("¿Se requiere eliminar este registro?", "Se necesita una confirmación...");
+                            result.done(function (dialogResult) {
+                                if (dialogResult == true) {
+                                  DeleteMedicine(e.data.idRecetado);
+                                   gridInstanceRecipes.refresh();
+                                   gridInstanceRecipes.repaint();
+                                   // DeleteEmployee(e.data.EmployeeId, e.data.Name, e.data.PaternalLastName, e.data.MaternalLastName, e.data.CompanyId, e.data.SmartFlowTagId, e.data.NoEmployee);
+                                }
+                            
+                            });
+                           
+
+                        })
+                        .appendTo(container);
+                },alignment:"center"
+
+            }
+             ],
+         showBorders: true
+    }
+    $scope.dataGridMoreInfoSintoma={
+     dataSource: SintomaData,
+     noDataText: "No hay datos añadidos.",
+     onInitialized: function (e) {
+            gridInstanceSintoma = e.component;
+            },onRowClick: function(e){
+                subformInstanceP.updateData(e.data);
+                 slideFormContainer("block2", "edit2");
+            },groupPanel: {
+            emptyPanelText: "Agrupar",
+            visible: "true"
+          }, columns: [
+             {caption:"Sintomas", dataField:"Sintomas",alignment: 'center'},
+             {caption:"Notas", dataField:"Notas",alignment: 'center'},
+             {caption:"Fecha", dataField:"Fecha",alignment: 'center'},
+             {caption:"Alergia algún alimento", dataField:"AlergiaAlimento",alignment: 'center'},
+             {caption:"Alergia algún medicamento", dataField:"AlergiaMedicamento",alignment: 'center'},
+             {caption:"Alergia polvo", dataField:"AlergiaPolvo",alignment: 'center'},
+             {caption:"Hubo prurito", dataField:"AlergiaPrurito",alignment: 'center'},
+             {caption:"Otra alergia", dataField:"AlergiaOtra",alignment: 'center'}
+          ]
+     }
 //=======================================================
 //====================Botones============================
 //Clínicos
@@ -1090,6 +1254,7 @@ $scope.SfButtonCreateClinic={
                 gridInstanceClinical.repaint();
                 subformInstance.resetValues();
                 clinicos=1;
+                slideFormContainer('none');
                
                
             }
@@ -1121,31 +1286,74 @@ $scope.SfButtonCreateSintomas={
         text: "Registrar",
         type: "success",
         useSubmitBehavior: true,
-        validationGroup: "employeesData",
+        validationGroup: "SintomasData",
         onClick: function () {
             if (subformInstanceP.validate().isValid) {
                 var data = subformInstanceP.option("formData"), bandera = true;
+                
+                data.ID_Consultas=ConcultaActual.ID_Consultas;
+                data.Fecha=ConcultaActual.startDate;
                 console.log(data);
-               
+               NewSintomaData(data);
+               Sintomas=1;
+               gridInstanceSintoma.refresh();
+               gridInstanceSintoma.repaint();
+               //slideFormContainer('none2');
                
             }
         }
     };
+$scope.SfButtonUpdateSintomas={
+    text: "Actualizar",
+        type: "default",
+        useSubmitBehavior: true,
+        validationGroup: "SintomasData",
+        onClick: function () {
+            if (subformInstanceP.validate().isValid) {
+                var data = subformInstanceP.option("formData"), bandera = true;
+                console.log(data);
+               UpdateSintomaData(data);
+            gridInstanceSintoma.refresh();
+            gridInstanceSintoma.repaint();
+            }
+        }
+}
 //Recetas
 $scope.SfButtonCreateR={
     text: "Registrar",
         type: "success",
         useSubmitBehavior: true,
-        validationGroup: "employeesData",
+        validationGroup: "RecipeData",
         onClick: function () {
             if (subformInstanceR.validate().isValid) {
                 var data = subformInstanceR.option("formData"), bandera = true;
+                data.idConsulta=ConcultaActual.ID_Consultas;
                 console.log(data);
-               
+                InsertingRecipes(data);
+                gridInstanceRecipes.refresh();
+                gridInstanceRecipes.repaint();
+                subformInstanceR.resetValues();
+                Receta=1;
                
             }
         }
 };
+$scope.SfButtonUpdateR={
+    text: "Actualizar",
+        type: "default",
+        useSubmitBehavior: true,
+        validationGroup: "RecipeData",
+        onClick: function () {
+            if (subformInstanceR.validate().isValid) {
+                var data = subformInstanceR.option("formData"), bandera = true;
+                console.log(data);
+               UpdatingRecipes(data);
+                gridInstanceRecipes.refresh();
+                gridInstanceRecipes.repaint();
+               subformInstanceR.resetValues();
+            }
+        }
+}
 //Más información
 //=======================================================
 //Apoyo
@@ -1182,12 +1390,7 @@ async function ReturnClinicalData(idConsulta){
         });
                return dataToForm.responseJSON;
 }
-  ReturnMedicineInformation();
- var MedicineOrderBy = new DevExpress.data.DataSource({
-               store: Medicines,
-               key: "ID_Medicamento",
-               group: "Laboratorio"
-                  });
+  
 async function ReturnMedicineInformation(){
     var dataToForm = $.ajax({
 

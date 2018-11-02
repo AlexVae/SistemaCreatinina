@@ -10,10 +10,10 @@ router.get('/NewPatient', function(req, res, next) {
   res.render('Medico/NewPatient/NewPatient', { title: 'Bienvenido', otroTexto: 'Medico' });
 });
 router.get('/MySchecht', function(req, res, next) {
-  res.render('Medico/Consultas/Consultas', { title: 'Bienvenido', otroTexto: 'Medico' });
+  res.render('Medico/Consultas/Consultas', { title: 'Mis Consultas', otroTexto: 'Medico' });
 });
 router.get('/Consulting', function(req, res, next) {
-  res.render('Medico/Consultando/Consultando', { title: 'Bienvenido', otroTexto: 'Medico' });
+  res.render('Medico/Consultando/Consultando', { title: 'Consultas de hoy', otroTexto: 'Medico' });
 });
 //=======================NEW REGISTRY========================================
 router.post('/NewPatientRegistry/PatientInfo', function(req, res, next) {
@@ -82,7 +82,7 @@ router.post('/NewHealtyInformation/HealtyInfo', function(req,res,next){
 //==========================UPDATING DATA====================================
 //UPDATING PATIENTS
 router.post('/UpdatingPatientsInformation/PatientsInfo', function(req,res,next){
- var query="SELECT * FROM Usuario AS U INNER JOIN PacientE AS P ON U.IdUsuario=P.ID_Paciente AND U.Eliminado=1 INNER JOIN Domicilio as D ON D.IdUsuario=P.ID_Paciente";
+ var query="SELECT * FROM Usuario AS U INNER JOIN Paciente AS P ON U.IdUsuario=P.ID_Paciente AND U.Eliminado=1 INNER JOIN Domicilio as D ON D.IdUsuario=P.ID_Paciente";
  global.conexion.query(query, function (err, result, fields) {
     if (err) throw err;
     if(FindingDuplicateDataUpdating(req.body,result)){
@@ -105,7 +105,7 @@ router.post('/UpdatingEmergencyContact/EmergencyInfo', function(req,res,next){
  var query="SELECT * FROM ContactoEmergencia WHERE ID_Paciente="+"'"+req.body.ID_Paciente+"'";
   global.conexion.query(query, function (err, result, fields) {
     if(err) throw err; 
-    if(FindingDuplicateDataUpdating){
+    if(FindingDuplicateEmergencyContactsUpdating(req.body,result)){
       var emergencyToInsert={ID_Paciente:req.body.ID_Paciente,Nombre:req.body.Nombre.toUpperCase(),Apellido_Paterno:req.body.Apellido_Paterno.toUpperCase(),Apellido_Materno:req.body.Apellido_Materno.toUpperCase(),Numero_Telefonico:req.body.Numero_Telefonico,Numero_Celular:req.body.Numero_Celular,Parentesco_Paciente:req.body.Parentesco_Paciente.toUpperCase()};
        global.conexion.update('ContactoEmergencia',emergencyToInsert,{ID_Contacto_Emergencia:{operator:'=', value:req.body.ID_Contacto_Emergencia}}, function(err, response) {
        if (err) throw err;
@@ -214,14 +214,137 @@ router.get('/GettingClinicalInfo/:ID_Consultas/', function(req, res) {
     res.json(result);
           });
 });
+//==============================Recipe======================================
 //Getting ALL MEDICINE IN SYSTEM
 router.get('/GettingMedicalInfo',function(req, res){
    var query="SELECT * FROM Medicamento";
    global.conexion.query(query, function(err, result, fields){
       if(err) throw err;
+      result.forEach(function(element, index, array) {
+        if(element.ID_Medicamento==result[index].ID_Medicamento){
+          result[index].Nombre_cantidad=element.Nombre+" "+element.Dosis;
+         
+        }
+      });
       res.json(result);
     })
 });
+router.get('/GettingActualRecipe/:idConsulta/',function(req,res){
+ var query="SELECT * FROM `Recetado` AS R INNER JOIN Medicamento AS M ON R.idMedicamento=M.ID_Medicamento WHERE R.idConsulta="+"'"+req.params.idConsulta+"'"
+ global.conexion.query(query, function(err, result, fields){
+ if(err) throw err;
+   result.forEach(function(element, index, array) {
+        if(element.ID_Medicamento==result[index].ID_Medicamento){
+          result[index].Nombre_cantidad=element.Nombre+" "+element.Dosis;
+          
+        }
+      });
+    res.json(result);
+ });
+});
+//New Recipe
+router.post('/NewMedicalRecipe/MedicalRecipe', function(req,res,next){
+  var query="SELECT * FROM Recetado";
+  var medicinesRecipe=req.body[Object.keys(req.body)[0]];//OBTENEMOS LA PROPIEDAD INACCESABLE POR JSON
+  console.log(medicinesRecipe);
+  var longitudM=medicinesRecipe.length;
+  global.conexion.query(query, function(err, result,fields){
+   if(err) throw err;
+   console.log(result);
+   var bandera=true;
+   result.forEach(function(element, index,array){
+   
+         if(element.idConsulta==req.body.idConsulta && medicinesRecipe==element.idMedicamento){
+           bandera=false;
+      }  
+    
+     
+   });
+   if(bandera){
+      insertingNewRecipe(longitudM, medicinesRecipe, req.body);
+      var toUpdate={Receta:1};
+      global.conexion.update('Consultas', toUpdate,{ID_Consultas:{operator:'=', value:req.body.idConsulta}}, function(err, response) {
+    if (err) throw err;
+      res.json({bandera:true});
+      });
+   }else{
+    res.json({bandera:false});
+   }
+          
+  });
+});
+router.post('/UpdatingRecipe/MedicalRecipe', function(req, res, next){
+ var query="SELECT * FROM Recetado";
+ global.conexion.query(query, function(err, result, fields){
+   if(err) throw err;
+   if(FindingDuplicateRecipesUpdating(req.body, result)){
+     var toUpdate={idMedicamento:req.body.ID_Medicamento,Recomendaciones:req.body.Recomendaciones};
+     global.conexion.update('Recetado', toUpdate,{idRecetado:{operator:'=', value:req.body.idRecetado}}, function(err, response) {
+    if (err) throw err;
+      res.json({bandera:true});
+      });
+   }else{
+    res.json({bandera:false});
+   }
+ });
+});
+router.post('/DeleteMedicine/:idRecetado', function(req,res,next){
+  var query="DELETE FROM `Recetado` WHERE idRecetado="+"'"+req.params.idRecetado+"'";
+  global.conexion.query(query, function(err, result, fields){
+    if(err) throw err;
+    res.json({bandera:true});
+  });
+});
+//============================================================================
+//=================================NewSintomaData=============================
+router.post('/CreatingNewSintomaData/SintomaData', function(req,res,next){
+  var MedicalHistory={ID_Consultas:req.body.ID_Consultas, Sintomas:req.body.Sintomas, Notas:req.body.Notas, Fecha:req.body.Fecha};
+  global.conexion.insert('ExpedienteMedico', MedicalHistory, function(err, response) {
+   if(err) throw err;
+   var query="SELECT MAX(ID_Expediente_Medico) AS id FROM ExpedienteMedico";
+   global.conexion.query(query, function(err, result, fields){
+    if(err) throw err;
+    var idExpediente=result[0].id;
+    var Injuries={ID_Expediente_Medico: idExpediente, AlergiaAlimento: req.body.AlergiaAlimento, AlergiaAlimentoDescripcion: req.body.AlergiaAlimentoDescripcion, AlergiaMedicamento:req.body.AlergiaMedicamento, AlergiaMedicamentoDescripcion:req.body.AlergiaMedicamentoDescripcion, AlergiaOtra:req.body.AlergiaOtra, AlergiaOtraDescripcion:req.body.AlergiaOtraDescripcion, AlergiaPolvo:req.body.AlergiaPolvo, AlergiaPolvoDescripcion:req.body.AlergiaPolvoDescripcion, AlergiaPrurito:req.body.AlergiaPrurito, AlergiaPruritoDescripcion:req.body.AlergiaPruritoDescripcion};
+    global.conexion.insert('Alergias', Injuries, function(err, response){
+      if (err) throw err;
+      var ConsultaToUpdate={Presion_Arterial:req.body.Presion_Arterial,Sintomas1:1};
+      global.conexion.update('Consultas', ConsultaToUpdate, {ID_Consultas:{operator:'=', value:req.body.ID_Consultas}}, function(err, response) {
+       if(err) throw err;
+       res.json({bandera:true});
+      });
+    });
+   });
+  });
+  // res.json({bandera:true});
+  
+});
+//UpdatingSintomaData
+router.post('/UpdatingSintomaData/SintomaData', function(req,res,next){
+  var MedicalHistory={ID_Consultas:req.body.ID_Consultas, Sintomas:req.body.Sintomas, Notas:req.body.Notas, Fecha:req.body.Fecha};
+  global.conexion.update('ExpedienteMedico', MedicalHistory,{ID_Expediente_Medico:{operator:'=', value:req.body.ID_Expediente_Medico}}, function(err, response) {
+      if(err) throw err;
+      var Injuries={ID_Expediente_Medico: req.body.ID_Expediente_Medico, AlergiaAlimento: req.body.AlergiaAlimento, AlergiaAlimentoDescripcion: req.body.AlergiaAlimentoDescripcion, AlergiaMedicamento:req.body.AlergiaMedicamento, AlergiaMedicamentoDescripcion:req.body.AlergiaMedicamentoDescripcion, AlergiaOtra:req.body.AlergiaOtra, AlergiaOtraDescripcion:req.body.AlergiaOtraDescripcion, AlergiaPolvo:req.body.AlergiaPolvo, AlergiaPolvoDescripcion:req.body.AlergiaPolvoDescripcion, AlergiaPrurito:req.body.AlergiaPrurito, AlergiaPruritoDescripcion:req.body.AlergiaPruritoDescripcion};
+     global.conexion.update('Alergias', Injuries,{ID_Alergias:{operator:'=', value:req.body.ID_Alergias}}, function(err, response) {
+       if(err) throw err;
+       var ConsultaToUpdate={Presion_Arterial:req.body.Presion_Arterial};
+      global.conexion.update('Consultas', ConsultaToUpdate, {ID_Consultas:{operator:'=', value:req.body.ID_Consultas}}, function(err, response) {
+       if(err) throw err;
+       res.json({bandera:true});
+      });
+     });
+  });
+    
+});
+//getting all sintomaData 
+router.get('/GetAllSintomaData/:idConsulta/', function(req,res){
+  var query='SELECT * FROM ExpedienteMedico AS E INNER JOIN Alergias AS A ON E.ID_Expediente_Medico=A.ID_Expediente_Medico INNER JOIN Consultas AS C ON E.ID_Consultas=C.ID_Consultas WHERE E.ID_Consultas='+"'"+req.params.idConsulta+"'";
+  global.conexion.query(query,function(err, result,fields){
+   if(err) throw err;
+   res.json(result);
+  });
+});
+//============================================================================
 //============================================================================
 //=========================================Support functions for patients data
 async function insertingPatient(PatientInformation){
@@ -305,7 +428,7 @@ function FindingDuplicateEmergencyContactsUpdating(DataFromForm,AllData){
   }
   var DataTwo=underscore.findWhere(AllData,{Numero_Celular:DataFromForm.Numero_Celular});
   if(DataTwo!=undefined){
-    if(DataOne.ID_Contacto_Emergencia!=DataFromForm.ID_Contacto_Emergencia){
+    if(DataTwo.ID_Contacto_Emergencia!=DataFromForm.ID_Contacto_Emergencia){
         bandera2=false;
        }
   }
@@ -330,7 +453,39 @@ function FindingDuplicateHealtyInfo(DataFromForm,AllData){
   }
 }
 
-
+ function FindingDuplicateRecipesUpdating(DataFromForm, AllData){
+  var bandera=true;
+  AllData.forEach(function(element, index,array){
+    if(element.idMedicamento==DataFromForm.ID_Medicamento && element.idRecetado!=DataFromForm.idRecetado){
+      bandera=false;
+    }
+  });
+  if(bandera){
+    return true;
+  }else{
+    return false;
+  }
+ }
+function FindingDuplicateMedicines(DataFromForm,AllData){
+  var bandera=true; 
+  var DataOne=underscore.findWhere(AllData,{idConsulta:DataFromForm.idConsulta});
+  var DataTwo=underscore.findWhere(AllData,{idMedicamento:DataFromForm.idMedicamento});
+  if(DataOne!=undefined){
+    bandera=false;
+  }
+  if(bandera){
+    return true;
+  }else{
+    return false;
+  }
+}
+ function insertingNewRecipe(lenght,recipes, ToInsert){
+   
+       global.conexion.insert('Recetado', {idConsulta:ToInsert.idConsulta, idMedicamento:recipes, Recomendaciones:ToInsert.Recomendaciones}, function(err, response) {
+         if(err) throw err;
+       });
+   
+ }
 
 
 

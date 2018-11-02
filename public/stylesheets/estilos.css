@@ -12,6 +12,9 @@
     text-align: left;
     
 }
+#altura{
+    height: 1000px
+}
 #popup {
     padding: 10px;
 }

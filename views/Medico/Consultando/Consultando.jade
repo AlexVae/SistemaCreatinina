@@ -8,42 +8,61 @@ block content
 			article
 				h1 Mis consultas para hoy
 				.Healty-Container(ng-app="ConsultaApp",ng-controller="ConsultaController")
-					.popup(dx-popup="popupPrincipal" )
+					.popup(dx-popup="popupPrincipal" id="altura")
 						div(data-options="dxTemplate: { name:'info' }")
-							.sf-form-container
-								h3 Actualización de datos clínicos
-								<br>
+							div(dx-scroll-view="pruebaScrollView")
+								.sf-form-container
+									h3 Actualización de datos clínicos
+									<br>
+									.widget-container
+									a(href="#", onclick="slideFormContainer('none');"): i.lnr.lnr-cross(aria-hidden="true")
+									#form(dx-form="formOptionsC")
+									<br>
+									.SfButtonUpdate(dx-button="SfButtonUpdateClinic")
+									.SfButtonCreate(dx-button="SfButtonCreateClinic")
+								.sf-form-container2
+									h3 Actualización de datos extra en consulta
+									<br>
+									.widget-container
+									a(href="#", onclick="slideFormContainer('none2');"): i.lnr.lnr-cross(aria-hidden="true")
+									#form(dx-form="formOptionsSintomas")
+									<br>
+									.SfButtonCreate1(dx-button="SfButtonCreateSintomas")
+									.SfButtonUpdate1(dx-button="SfButtonUpdateSintomas")
+								.sf-form-container3
+									h4 Recetas médicas para cada paciente 
+									<br>
+									.widget-container
+									a(href="#", onclick="slideFormContainer('none3');"): i.lnr.lnr-cross(aria-hidden="true")
+									#form(dx-form="formOptionsReceta")
+									<br>
+									.SfButtonCreate2(dx-button="SfButtonCreateR")
+									.SfButtonUpdate2(dx-button="SfButtonUpdateR")
 								.widget-container
-								a(href="#", onclick="slideFormContainer('none');"): i.lnr.lnr-cross(aria-hidden="true")
-								#form(dx-form="formOptionsC")
-								<br>
-								.SfButtonUpdate(dx-button="SfButtonUpdateClinic")
-								.SfButtonCreate(dx-button="SfButtonCreateClinic")
-							.sf-form-container3
-								h3 Recetas médicas para cada paciente 
-								<br>
-								.widget-container
-								a(href="#", onclick="slideFormContainer('none3');"): i.lnr.lnr-cross(aria-hidden="true")
-								#form(dx-form="formOptionsReceta")
-								<br>
-								.SfButtonCreate2(dx-button="SfButtonCreateR")
-							.widget-container
-								#gridContainer(dx-data-grid="dataGridMoreInfo")
-								<br>
-								h3 Datos clínicos del paciente
-								<br>
-								#gridContainer(dx-data-grid="dataGridMoreInfoClinical")
-							<br><br>
-							table
-								tr
-									td
-										div(dx-button="showFormAuxClinico")
-									td
-										div(dx-button="showFormAuxSintomas")
-									td
-										div(dx-button="showFormAuxReceta")
-									td
-										div(dx-button="showFormAuxPrueba")
+									#gridContainer(dx-data-grid="dataGridMoreInfo")
+									<br>
+									h4 Datos clínicos del paciente
+									<br>
+									#gridContainer(dx-data-grid="dataGridMoreInfoClinical")
+									<br>
+									h4 Receta del paciente
+									<br>
+									#gridContainer(dx-data-grid="dataGridMoreInfoRecetado")
+									<br>
+									h4 Datos extra de consulta
+									<br>
+									#gridContainer(dx-data-grid="dataGridMoreInfoSintoma")
+								<br><br>
+								<br><br>
+								<br><br>
+								table
+									tr
+										td
+											div(dx-button="showFormAuxClinico")
+										td
+											div(dx-button="showFormAuxSintomas")
+										td
+											div(dx-button="showFormAuxReceta")
 					.popup(dx-popup="popupClinico")
 						div(data-options="dxTemplate: { name:'info' }")
 									.widget-container

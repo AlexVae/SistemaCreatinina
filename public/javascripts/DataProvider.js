@@ -58,6 +58,8 @@ var StudentsformData = {
     "Sex": ""
 };
 
+var Medicinas=[];
+
 //================
 
 var types = ["spline", "stackedspline", "fullstackedspline"];
@@ -276,7 +278,20 @@ function slideFormContainer(display, action) {
         $('.SfButtonUpdate').show();
 
     }
+    if (action == "edit1") {
 
+        $('.SfButtonCreate2').hide();
+
+        $('.SfButtonUpdate2').show();
+
+    }
+       if (action == "edit2") {
+
+        $('.SfButtonCreate1').hide();
+
+        $('.SfButtonUpdate1').show();
+
+    }
     if (action == "create") {
 
         $('.SfButtonUpdate').hide();
@@ -284,7 +299,18 @@ function slideFormContainer(display, action) {
         $('.SfButtonCreate').show();
 
     }
+    if (action == "create1") {
 
+        $('.SfButtonUpdate2').hide();
+
+        $('.SfButtonCreate2').show();
+
+    }
+    if(action == "create2"){
+       $('.SfButtonUpdate1').hide();
+
+        $('.SfButtonCreate1').show();
+    }
     if (display == "block") {
 
         $('.sf-form-container').css('display', display);
@@ -310,6 +336,18 @@ function slideFormContainer(display, action) {
 
         return;
 
+    }
+    if(display  == "block2"){
+
+        $('.sf-form-container2').css('display', display);
+
+        //var length = $('.sf-form-container').length;
+
+        //console.log($('.sf-form-container')[length-1].style.display = display);
+
+        $('.sf-form-container2').show(500);
+
+        return;
     }
     if (display == "block3") {
 
@@ -337,6 +375,13 @@ function slideFormContainer(display, action) {
     if (display == "none1") {
 
         $('.sf-form-container1').hide(500);
+
+        return;
+
+    }
+    if (display == "none2") {
+
+        $('.sf-form-container2').hide(500);
 
         return;
 
@@ -557,6 +602,98 @@ async function UpdateClinicalInfo(ClinicalInfo){
       
     }).fail(function () {
          NotificationError("Error al guardar datos clinicos");
+
+    return false;
+    }).always(function () {
+        
+    }); 
+}
+//=====================Recipe=================================================
+async function InsertingRecipes(MedicalRecipe){
+  $.post(AdressFrontServer+'/Healty/NewMedicalRecipe/'+'MedicalRecipe',MedicalRecipe, function (data) {
+    }).done(function (data) {
+    if(data.bandera){
+     NotificationSuccess("Registro de receta exitosa.");
+    // slideFormContainer('none3');
+    }
+    else
+       NotificationError("Ocurrió un error: uno o varios medicamentos ya se han recetado en esta contulta.");
+      
+    }).fail(function () {
+         NotificationError("Error al guardar receta");
+
+    return false;
+    }).always(function () {
+        
+    }); 
+}
+
+async function UpdatingRecipes(MedicalRecipe){
+   $.post(AdressFrontServer+'/Healty/UpdatingRecipe/'+'MedicalRecipe',MedicalRecipe, function (data) {
+    }).done(function (data) {
+    if(data.bandera){
+     NotificationSuccess("Actualización de receta exitosa.");
+     slideFormContainer('none3');
+    }
+    else
+       NotificationError("Ocurrió un error: uno o varios medicamentos ya se han recetado en esta contulta.");
+      
+    }).fail(function () {
+         NotificationError("Error al guardar receta");
+
+    return false;
+    }).always(function () {
+        
+    }); 
+}
+
+async function DeleteMedicine(idRecetado){
+   $.post(AdressFrontServer+'/Healty/DeleteMedicine/'+idRecetado, function (data) {
+    }).done(function (data) {
+    if(data.bandera){
+     NotificationSuccess("Medicamento eliminado de la receta.");
+    }
+    
+      
+    }).fail(function () {
+         NotificationError("Error al guardar receta");
+
+    return false;
+    }).always(function () {
+        
+    }); 
+}
+//============================================================================
+//==================================SintomaData===============================
+async function NewSintomaData(SintomaData){
+  $.post(AdressFrontServer+'/Healty/CreatingNewSintomaData/'+'SintomaData',SintomaData, function (data) {
+    }).done(function (data) {
+    if(data.bandera){
+     NotificationSuccess("Datos de consulta registrados correctamente.");
+     slideFormContainer('none2');
+    }
+    
+      
+    }).fail(function () {
+         NotificationError("Error al guardar datos de consulta.");
+
+    return false;
+    }).always(function () {
+        
+    }); 
+}
+
+async function UpdateSintomaData(SintomaData){
+  $.post(AdressFrontServer+'/Healty/UpdatingSintomaData/'+'SintomaData',SintomaData, function (data) {
+    }).done(function (data) {
+    if(data.bandera){
+     NotificationSuccess("Datos de consulta actualizados correctamente.");
+     slideFormContainer('none2');
+    }
+    
+      
+    }).fail(function () {
+         NotificationError("Error al guardar datos de consulta.");
 
     return false;
     }).always(function () {

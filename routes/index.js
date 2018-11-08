@@ -210,7 +210,7 @@ var query='SELECT MAX(IdUsuario) AS MAX FROM Usuario'
 
 //==================================LOGIN==========================================
 
-router.get('/login', function(req, res, next) {
+router.get('/', function(req, res, next) {
   res.render('login', { title: 'Inicio de sesión', otroTexto: 'Otro texto' });
 });
 

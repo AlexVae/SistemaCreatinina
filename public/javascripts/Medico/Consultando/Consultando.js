@@ -1,4 +1,5 @@
-var ConsultaApp = angular.module('ConsultaApp', ['dx']),subformInstanceR, Medicines, Sintomas,gridInstanceRecipes ,gridInstanceSchet=null, gridInstanceSintoma,gridInstanceClinical=null,gridInstanceInfo, subformInstance,extraMedico,extraPaciente,subformInstanceP,dataToPut,idUsuario,banderaGrids=false,clinicos,ConcultaActual,Receta;
+var ConsultaApp = angular.module('ConsultaApp', ['dx']),popupPrincipal,subformInstanceR,gridInstanceHemo,calendarInstance, Medicines,subformInstanceH, Sintomas,gridInstanceRecipes ,gridInstanceSchet=null, gridInstanceSintoma,gridInstanceClinical=null,gridInstanceInfo, subformInstance,extraMedico,extraPaciente,subformInstanceP,dataToPut,idUsuario,banderaGrids=false,clinicos,ConcultaActual,Receta,dialisis;
+var HemoSessions;
 ConsultaApp.controller('ConsultaController', function DemoController($scope,$http) {
 
 //=======================Formulario======================
@@ -677,15 +678,78 @@ ConsultaApp.controller('ConsultaController', function DemoController($scope,$htt
              }
         ]
    };
+   $scope.formOptionsH={
+     colCount: 4,
+        labelLocation: "top",
+        validationGroup: "hemoData",
+        onInitialized: function (e) {
+            subformInstanceH = e.component;
+        },
+        items: [
+           {
+                    dataField: "startDate",
+                    label: {text:"Fecha de sesión de hemodiálisis"},
+                    editorType: "dxDateBox",
+                    editorOptions: {
+                        width: "100%",
+                        type:"datetime",
+                        onInitialized: function(e){
+                           calendarInstance=e.component;
+                        },
+                        onClosed: function (e){
+                            console.log(calendarInstance.value);
+                        }
+                    }, customFormat: {
+                     type: "date"
+
+                     },validationRules:[{
+                    type: "required",
+                    message: "Introducir fecha de sesión."
+                }]
+                },{
+                dataField: "Duracion",
+                label: { text: "Duración de hemodiálisis" },
+                editorOptions : {
+                    maxLength: '1'
+                    //readOnly: true
+                },
+                validationRules: [{
+                    type: "required",
+                    message: "Se requiere la introducción de duración de hemodiálisis."
+                },{
+                    type: "pattern",
+                    pattern: "^[0-9.]+$",
+                    message: "No utilizar caracteres diferentes a números."
+
+                }]
+            
+           }, {
+                dataField: "ID_Hemodialisis",
+                label: { text: "Citas ya ocupadas" },
+               editorType: "dxSelectBox",
+                editorOptions: {
+                    placeholder: "Seleccionar...",
+                    noDataText: "No hay datos para mostrar.",
+                    searchEnabled: true,
+                    items: HemoSessions,//CHANGE
+                    displayExpr: "Fecha",
+                    valueExpr: "ID_Hemodialisis"
+                }
+            }
+        ]
+   };
 //===================PopupPrincipal======================
-$scope.visiblePopup = false;
-$scope.showInfo = function () {
-        $scope.visiblePopup = true;
+    $scope.visiblePopup = false;
+    $scope.showInfo = function () {
+            $scope.visiblePopup = true;
     };
-$scope.popupPrincipal = {
+    $scope.popupPrincipal = {
         width: "90%",
         height: "90%",
         contentTemplate: "info",
+        onInitialized: function (e) {
+           popupPrincipal = e.component;
+        },
         showTitle: true,
         title: "Consulta médica",
         dragEnabled: false,
@@ -698,12 +762,12 @@ $scope.popupPrincipal = {
         }
     };
 
-//popup receta
-$scope.visiblePopupR = false;
-$scope.showInfoR = function () {
-        $scope.visiblePopupR = true;
-    };
-$scope.popupReceta={
+     //popup receta
+    $scope.visiblePopupR = false;
+    $scope.showInfoR = function () {
+            $scope.visiblePopupR = true;
+        };
+    $scope.popupReceta={
        width: "60%",
         height: "60%",
         contentTemplate: "info",
@@ -717,14 +781,14 @@ $scope.popupReceta={
         bindingOptions: {
             visible: "visiblePopupR",
         }
-}
+    }
 
-//popup clínico
-$scope.visiblePopupC = false;
-$scope.showInfoC = function () {
-        $scope.visiblePopupC = true;
-    };
-$scope.popupClinico = {
+     //popup clínico
+    $scope.visiblePopupC = false;
+    $scope.showInfoC = function () {
+            $scope.visiblePopupC = true;
+        };
+    $scope.popupClinico = {
         width: "90%",
         height: "90%",
         contentTemplate: "info",
@@ -735,12 +799,12 @@ $scope.popupClinico = {
         bindingOptions: {
             visible: "visiblePopupC",
         }
-    };
-    $scope.visiblePopupS = false;
-$scope.showInfoS = function () {
-        $scope.visiblePopupS = true;
-    };
-$scope.popupSintomas = {
+        };
+        $scope.visiblePopupS = false;
+    $scope.showInfoS = function () {
+            $scope.visiblePopupS = true;
+        };
+     $scope.popupSintomas = {
         width: "70%",
         height: "80%",
         contentTemplate: "info",
@@ -751,15 +815,15 @@ $scope.popupSintomas = {
         bindingOptions: {
             visible: "visiblePopupS",
         }
-    };
+        };
 
-//Prueba
-$scope.visiblePopupPrueba=false;
-$scope.showInfoP=function(){
-$scope.visiblePopupPrueba=true;
-};
-$scope.popupPrueba={
-  width: "70%",
+     //Prueba
+         $scope.visiblePopupPrueba=false;
+    $scope.showInfoP=function(){
+        $scope.visiblePopupPrueba=true;
+        };
+        $scope.popupPrueba={
+      width: "70%",
     height: "80%",
     showTitle: true,
      contentTemplate: "info",
@@ -767,25 +831,31 @@ $scope.popupPrueba={
     bindingOptions: {
       visible: "visiblePopupPrueba",
     }
-};
+    };
 
 //=======================================================
 
-
-$scope.showFormAuxReceta = {
+//==============Botones de muestra de formularios========
+  $scope.showFormAuxReceta = {
         text: "Recetar paciente",
-        icon: 'lnr lnr-users',
+        icon: 'lnr lnr-user',
         onClick: function (e) {
+            slideFormContainer('none');
+            slideFormContainer('none2')
+            slideFormContainer('none4');
            // $scope.showInfoR();
            ReturnMedicineInformation();
            subformInstanceR.resetValues();
            slideFormContainer("block3", "create1");
         }
     };
-$scope.showFormAuxClinico={
+  $scope.showFormAuxClinico={
         text: "Datos clínicos",
-        icon: 'lnr lnr-users',
+        icon: 'lnr lnr-user',
         onClick: function (e) {
+            slideFormContainer('none2')
+            slideFormContainer('none3');
+            slideFormContainer('none4');
            if(clinicos==0){
             subformInstance.resetValues();
           slideFormContainer("block", "create");
@@ -801,11 +871,14 @@ $scope.showFormAuxClinico={
             else
             	DevExpress.ui.dialog.alert("Ya se han dado de alta los datos clínicos de este paciente en esta consulta", "¡Atención!");*/
         }
- };
- $scope.showFormAuxSintomas={
+       };
+   $scope.showFormAuxSintomas={
  	 text: "Síntomas de paciente",
-        icon: 'lnr lnr-users',
+        icon: 'lnr lnr-user',
         onClick: function (e) {
+            slideFormContainer('none');
+            slideFormContainer('none3')
+            slideFormContainer('none4');
             if(Sintomas==1){
              subformInstanceP.updateData(gridInstanceSintoma.getDataSource()._items[0]);
              slideFormContainer("block2", "edit2");
@@ -815,15 +888,64 @@ $scope.showFormAuxClinico={
         	
            // $scope.showInfoC();
         }
- }
- $scope.showFormAuxPrueba={
+     }
+   $scope.showFormAuxPrueba={
         text: "Prueba",
-        icon: 'lnr lnr-users',
+        icon: 'lnr lnr-user',
         onClick: function (e) {
             $scope.showInfoP();
            // $scope.showInfoC();
         }
- }
+     }
+   $scope.showFormAuxHemodilisis={
+        text: "Registrar Cita de hemodiálisis",
+        icon: 'lnr lnr-user',
+        onClick: function (e) {
+                slideFormContainer('none');
+                slideFormContainer('none2')
+                slideFormContainer('none3');
+            if(dialisis==1){
+            var data=gridInstanceHemo.getDataSource()._items[0];
+            var startDate=moment(data.startDate,'MM-DD-YYYY HH:mm')
+            var endDate=moment(data.endDate,'MM-DD-YYYY HH:mm');
+            var diff = moment.preciseDiff(startDate, endDate, true);
+            data.Duracion=diff.hours;
+            subformInstanceH.updateData(data);
+            ReturnHemodialisisToday();
+             slideFormContainer("block4","edit3");
+            }else{
+             slideFormContainer("block4", "create3");
+             subformInstanceH.resetValues();
+             ReturnHemodialisisToday();
+            }
+        }
+     };
+
+ $scope.FinishSession={
+        text: "Terminar consulta",
+        type: "danger",
+        useSubmitBehavior: true,
+        validationGroup: "ClinicData",
+        icon: '',
+        onClick: function () {
+            var result = DevExpress.ui.dialog.confirm("¿Se encuentra seguro de querer terminar la consulta médica?", "Se necesita una confirmación");
+                  result.done(function (dialogResult) {
+                      //alert(dialogResult);
+                    if (dialogResult) {
+                     if(Sintomas==1&&clinicos==1&&dialisis==1){
+                 //Aquí terminamos la consulta
+                 FinishingSchecht(ConcultaActual.ID_Consultas);
+                 popupPrincipal.hide();
+                 gridInstanceSchet.refresh();
+                 gridInstanceSchet.repaint();
+              }else{
+                DevExpress.ui.dialog.alert("Se necesita primero guardar datos clínicos, sintomas de paciente y registrar la próxima sesión de hemodiálisis.", "¡Atención!");
+              }
+                      }
+                });
+             
+        }
+     };
 //=======================================================
 
 //=======================Peticiones======================
@@ -1003,11 +1125,41 @@ $scope.showFormAuxClinico={
             DeleteProduct(key);
         }
     });
+ var HemoData=new DevExpress.data.CustomStore({
+        load: function () {
+            //showLoader();
+            return $http({
+                crossDomain: true,
+                type: 'GET',
+                headers: {
+                    'Content-Type': undefined
+                },
+                async: false,
+                url: "http://localhost:3000/Healty/GettingHemodialisisSession/"+ConcultaActual.ID_Cita,
+                data: { symbol: 'ctsh' },
+                dataType: "jsonp",
+                jsonpCallback: 'fnsuccesscallback'
+            })
+                .then(function (response) {
+                   // disableLoader();
+                     //console.log(response.data);
+                    // ConcultaActual=response.data.ID_Consultas; 
+                    return { data: response.data };
+                }, function (response) {
+                    //disableLoader();
+                    //return $q.reject("Data Loading Error");
+                });
+        },
+        remove: function (key) {
+            DeleteProduct(key);
+        }
+    });
 //=======================================================
 
 //=======================DataGrid========================
- $scope.dataGridOptions = {
+    $scope.dataGridOptions = {
         dataSource: Schetch,
+        noDataText: "No hay datos de alguna consulta.",
          onInitialized: function (e) {
             gridInstanceSchet = e.component;
         },onRowClick: function(e){
@@ -1016,6 +1168,7 @@ $scope.showFormAuxClinico={
           idUsuario=e.data.ID_Paciente;
           Sintomas=e.data.Sintomas1;
           Receta=e.data.Receta;
+          dialisis=e.data.Dialisis;
           if(banderaGrids){
             gridInstanceInfo.refresh();
             gridInstanceInfo.repaint();
@@ -1025,12 +1178,17 @@ $scope.showFormAuxClinico={
             gridInstanceRecipes.repaint();
             gridInstanceSintoma.refresh();
             gridInstanceSintoma.repaint();
+            gridInstanceHemo.refresh();
+            gridInstanceHemo.repaint();
+            slideFormContainer('none4');
           }else{
             banderaGrids=true;
           }
           clinicos=e.data.Clinicos;
           slideFormContainer('none');
+          slideFormContainer('none2');
           slideFormContainer('none3');
+          slideFormContainer('none4');
           $scope.showInfo();
           dataToPut=e.data;
          // subformInstanceP.updateData(e.data);
@@ -1106,6 +1264,9 @@ $scope.showFormAuxClinico={
          onInitialized: function (e) {
             gridInstanceClinical = e.component;
         }, onRowClick: function(e){
+            slideFormContainer('none2')
+            slideFormContainer('none3');
+            slideFormContainer('none4');
             if(clinicos!=0){
                 //$scope.showInfoC();
                 //slideFormContainer("block", "create");
@@ -1151,6 +1312,9 @@ $scope.showFormAuxClinico={
          onInitialized: function (e) {
             gridInstanceRecipes = e.component;
             }, onRowClick: function(e){
+            slideFormContainer('none');
+            slideFormContainer('none2')
+            slideFormContainer('none4');
             console.log(e.data);
             subformInstanceR.updateData(e.data);
             ReturnMedicineInformation();
@@ -1207,6 +1371,9 @@ $scope.showFormAuxClinico={
      onInitialized: function (e) {
             gridInstanceSintoma = e.component;
             },onRowClick: function(e){
+                slideFormContainer('none');
+                slideFormContainer('none3')
+                slideFormContainer('none4');
                 subformInstanceP.updateData(e.data);
                  slideFormContainer("block2", "edit2");
             },groupPanel: {
@@ -1222,7 +1389,32 @@ $scope.showFormAuxClinico={
              {caption:"Hubo prurito", dataField:"AlergiaPrurito",alignment: 'center'},
              {caption:"Otra alergia", dataField:"AlergiaOtra",alignment: 'center'}
           ]
-     }
+     };
+    $scope.dataGridMoreInfoHemo={
+        dataSource: HemoData,
+     noDataText: "No hay datos añadidos.",
+     onInitialized: function (e) {
+            gridInstanceHemo = e.component;
+            },onRowClick: function(e){
+                slideFormContainer('none');
+                slideFormContainer('none2')
+                slideFormContainer('none3');
+           var data=gridInstanceHemo.getDataSource()._items[0];
+            var startDate=moment(data.startDate,'MM-DD-YYYY HH:mm')
+            var endDate=moment(data.endDate,'MM-DD-YYYY HH:mm');
+            var diff = moment.preciseDiff(startDate, endDate, true);
+            data.Duracion=diff.hours;
+            subformInstanceH.updateData(data);
+             ReturnHemodialisisToday();
+             slideFormContainer("block4","edit3");
+            },groupPanel: {
+            emptyPanelText: "Agrupar",
+            visible: "true"
+          }, columns: [
+             {caption:"Fecha de inicio", dataField:"startDate",alignment: 'center'},
+             {caption:"Fecha de termino", dataField:"endDate",alignment: 'center'}
+          ]
+    };
 //=======================================================
 //====================Botones============================
 //Clínicos
@@ -1354,6 +1546,49 @@ $scope.SfButtonUpdateR={
             }
         }
 }
+//Hemodialisis
+$scope.SfButtonCreateH={
+   text: "Registrar",
+        type: "success",
+        useSubmitBehavior: true,
+        validationGroup: "hemoData",
+        onClick: function () {
+            if (subformInstanceH.validate().isValid) {
+                var data = subformInstanceH.option("formData"), bandera = true;
+                data.startDate=moment(data.startDate).format('MM-DD-YYYY HH:mm');
+                data.endDate=moment(data.startDate).add(data.Duracion, 'hour')._d;
+                data.endDate=moment(data.endDate).format('MM-DD-YYYY HH:mm');
+                data.ID_Cita=ConcultaActual.ID_Cita;
+                data.idConsulta=ConcultaActual.ID_Consultas;
+                NewHemoData(data);
+                ReturnHemodialisisToday();
+                gridInstanceHemo.refresh();
+                gridInstanceHemo.repaint();
+                dialisis=1;
+               // subformInstanceH.resetValues();
+            }
+        }
+};
+$scope.SfButtonUpdateH={
+    text: "Actualizar",
+        type: "default",
+        useSubmitBehavior: true,
+        validationGroup: "hemoData",
+        onClick: function () {
+            if (subformInstanceH.validate().isValid) {
+                var data = subformInstanceH.option("formData"), bandera = true;
+                data.startDate=moment(data.startDate).format('MM-DD-YYYY HH:mm');
+                data.endDate=moment(data.startDate).add(data.Duracion, 'hour')._d;
+                data.endDate=moment(data.endDate).format('MM-DD-YYYY HH:mm');
+                data.ID_Cita=ConcultaActual.ID_Cita;
+                data.idConsulta=ConcultaActual.ID_Consultas;
+                console.log(data);
+                UpdateHemoData(data);
+                gridInstanceHemo.refresh();
+                gridInstanceHemo.repaint();
+            }
+        }
+}
 //Más información
 //=======================================================
 //Apoyo
@@ -1425,6 +1660,60 @@ async function ReturnMedicineInformation(){
                }catch(error){
 
                }}
+async function ReturnHemodialisisToday(){
+       var dataToForm = $.ajax({
+
+              type: 'GET',
+
+               url: "http://localhost:3000/Healty/GetAllHemodialisisSession",
+
+              async: false,
+
+            dataType: "json",
+
+           
+
+           success: function (data) {
+
+              return data;
+
+           },
+
+            error: function (xhr, type, exception) {
+
+                // Do your thing
+
+            }
+
+        });
+       HemoSessions= dataToForm.responseJSON;
+       HemoSessions.forEach(function(element, index,array){
+        element.Fecha=element.startDate+" "+element.endDate;
+        HemoSessions[index]=element;
+       });
+       try{
+
+              subformInstanceH._editorInstancesByField.ID_Hemodialisis.option("items", HemoSessions);
+
+               }catch(error){
+
+               }
+}
+async function ReturnHemodialisisUpdt(Day){
+       
+       HemoSessions= dataToForm.responseJSON;
+       HemoSessions.forEach(function(element, index,array){
+        element.Fecha=element.startDate+" "+element.endDate;
+        HemoSessions[index]=element;
+       });
+       try{
+
+              subformInstanceH._editorInstancesByField.ID_Hemodialisis.option("items", HemoSessions);
+
+               }catch(error){
+
+               }
+}
 
 //PRUEBAS
 $scope.pruebaScrollView={

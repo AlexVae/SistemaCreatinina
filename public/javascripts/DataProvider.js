@@ -292,6 +292,13 @@ function slideFormContainer(display, action) {
         $('.SfButtonUpdate1').show();
 
     }
+     if (action == "edit3") {
+
+        $('.SfButtonCreate3').hide();
+
+        $('.SfButtonUpdate3').show();
+
+    }
     if (action == "create") {
 
         $('.SfButtonUpdate').hide();
@@ -310,6 +317,11 @@ function slideFormContainer(display, action) {
        $('.SfButtonUpdate1').hide();
 
         $('.SfButtonCreate1').show();
+    }
+    if(action == "create3"){
+       $('.SfButtonUpdate3').hide();
+
+        $('.SfButtonCreate3').show();
     }
     if (display == "block") {
 
@@ -362,6 +374,19 @@ function slideFormContainer(display, action) {
         return;
 
     }
+     if (display == "block4") {
+
+        $('.sf-form-container4').css('display', display);
+
+        //var length = $('.sf-form-container').length;
+
+        //console.log($('.sf-form-container')[length-1].style.display = display);
+
+        $('.sf-form-container4').show(500);
+
+        return;
+
+    }
     if (display == "none") {
 
         //$('.sf-form-container').css('display', display);
@@ -393,9 +418,18 @@ function slideFormContainer(display, action) {
         return;
 
     }
+      if (display == "none4") {
+
+        $('.sf-form-container4').hide(500);
+
+        return;
+
+    }
     $('.sf-form-container').slideToggle();
     $('.sf-form-container1').slideToggle();
+    $('.sf-form-container2').slideToggle();
     $('.sf-form-container3').slideToggle();
+    $('.sf-form-container4').slideToggle();
 
 }
 
@@ -699,6 +733,128 @@ async function UpdateSintomaData(SintomaData){
     }).always(function () {
         
     }); 
+}
+//============================================================================
+//==================================Hemodialisis==============================
+async function NewHemoData(HemoData){
+  $.post(AdressFrontServer+'/Healty/NewHemodialisisData/HemoData',HemoData, function (data) {
+    }).done(function (data) {
+    if(data.bandera){
+     NotificationSuccess("Datos de hemodiálisis insertados.");
+     slideFormContainer('none4');
+    }
+    else{
+       NotificationError("Error al guardar datos de Hemodialisis, hay un problema con la fecha ingresada.");
+    }
+      
+    }).fail(function () {
+         NotificationError("Error al guardar datos de Hemodialisis.");
+
+    return false;
+    }).always(function () {
+        
+    }); 
+    }
+  async function UpdateHemoData(HemoData){
+  $.post(AdressFrontServer+'/Healty/UpdatingHemodialisisData/HemoData',HemoData, function (data) {
+    }).done(function (data) {
+    if(data.bandera){
+     NotificationSuccess("Datos de hemodiálisis actualizados.");
+     slideFormContainer('none4');
+    }
+    else{
+       NotificationError("Error al guardar datos de Hemodialisis, la fecha se empalma.");
+    }
+      
+    }).fail(function () {
+         NotificationError("Error al guardar datos de Hemodialisis.");
+
+    return false;
+    }).always(function () {
+        
+    }); 
+    }
+//============================================================================
+//==================================Medicine==================================
+async function InsertingMedicines(MedicineInfo){
+   $.post(AdressFrontServer+'/Healty/NewMedicineRegistry/'+'MedicineInfo',MedicineInfo, function (data) {
+    }).done(function (data) {
+    if(data.bandera){
+     NotificationSuccess("Datos de medicamento guardados correctamente.");
+     slideFormContainer('none');
+    }
+    
+      
+    }).fail(function () {
+         NotificationError("Error al guardar datos de medicamento.");
+
+    return false;
+    }).always(function () {
+        
+    }); 
+}
+async function UpdatingMedicines(MedicineInfo){
+   $.post(AdressFrontServer+'/Healty/UpdatingMedicines/MedicineInfo',MedicineInfo, function (data) {
+    }).done(function (data) {
+    if(data.bandera){
+     NotificationSuccess("Datos de medicamento actualizados correctamente.");
+     slideFormContainer('none');
+    }
+    
+      
+    }).fail(function () {
+         NotificationError("Error al guardar datos de medicamento.");
+
+    return false;
+    }).always(function () {
+        
+    }); 
+}
+async function DeletingMedicine(ID_Medicamento){
+  $.post(AdressFrontServer+'/Healty/DeletingMedicine/'+ID_Medicamento, function (data) {
+    }).done(function (data) {
+    if(data.bandera){
+     NotificationSuccess("Datos de medicamento eliminados correctamente.");
+     slideFormContainer('none');
+    }
+    
+      
+    }).fail(function () {
+         NotificationError("Error al guardar datos de medicamento.");
+
+    return false;
+    }).always(function () {
+        
+    }); 
+}
+async function FinishingSchecht(ID_Consultas){
+       var dataToForm = $.ajax({
+
+              type: 'GET',
+
+               url: "http://localhost:3000/Healty/FinishSchetch/"+ID_Consultas,
+
+              async: false,
+
+            dataType: "json",
+
+           
+
+           success: function (data) {
+
+              return data;
+
+           },
+
+            error: function (xhr, type, exception) {
+
+                // Do your thing
+
+            }
+    
+        });
+        NotificationSuccess("Se terminó la consulta.");
+       
 }
 //============================================================================
 //==================================Nurse=====================================

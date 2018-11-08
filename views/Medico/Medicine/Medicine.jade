@@ -1,0 +1,23 @@
+extends ../../layout
+block content
+	include ../barraMedi
+	<br><br>
+	script(src='/javascripts/Medico/Medicine/Medicine.js')
+	body.dx-viewport
+		div.content-article(style='white-space:pre;')
+			article
+				h1 Registro de un medicamento
+				.Healty-Container(ng-app="MedicineApp",ng-controller="MedicineController")
+					.sf-form-container
+						h2 Registrar un nuevo medicamento
+						<br>
+						.widget-container
+						a(href="#", onclick="slideFormContainer('none');"): i.lnr.lnr-cross(aria-hidden="true")
+						#form(dx-form="formOptionsMedicine")
+						<br>
+						.SfButtonCreate(dx-button="SfButtonCreateMedicine")
+						<br>
+						.SfButtonUpdate(dx-button="SfButtonUpdateMedicine")
+					div(dx-button="showForm")
+					<br>
+					#gridContainer(dx-data-grid="dataGridOptions")

@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 var underscore=require('underscore');
 var moment= require('moment');
+var moment1 = require('moment-precise-range-plugin');
+var moment2=require('moment-range');
 //=========================Views=============================================
 router.get('/', function(req, res, next) {
   res.render('Medico/indexMedi', { title: 'Bienvenido', otroTexto: 'Medico' });
@@ -14,6 +16,9 @@ router.get('/MySchecht', function(req, res, next) {
 });
 router.get('/Consulting', function(req, res, next) {
   res.render('Medico/Consultando/Consultando', { title: 'Consultas de hoy', otroTexto: 'Medico' });
+});
+router.get('/NewMedicineRegistry', function(req, res, next) {
+  res.render('Medico/Medicine/Medicine', { title: 'Registro de un nuevo medicamento', otroTexto: 'Medico' });
 });
 //=======================NEW REGISTRY========================================
 router.post('/NewPatientRegistry/PatientInfo', function(req, res, next) {
@@ -346,6 +351,156 @@ router.get('/GetAllSintomaData/:idConsulta/', function(req,res){
 });
 //============================================================================
 //============================================================================
+//======================================Medicine==============================
+router.get('/GettingMedicineInfo',function(req, res){
+   var query="SELECT * FROM Medicamento WHERE Eliminado=1";
+   global.conexion.query(query, function(err, result, fields){
+      if(err) throw err;
+      res.json(result);
+    })
+});
+router.post('/NewMedicineRegistry/MedicineInfo', function(req,res,next){
+  console.log(req.body);
+  var MedicalInfo={Nombre: req.body.Nombre, Dosis: req.body.Dosis};
+  global.conexion.insert('Medicamento', MedicalInfo,function(err, response){
+    if(err) throw err;
+    res.json({bandera:true});
+  });
+});
+router.post('/UpdatingMedicines/MedicineInfo', function(req,res,next){
+  var MedicalInfo={Nombre: req.body.Nombre, Dosis: req.body.Dosis};
+  global.conexion.update('Medicamento', MedicalInfo,{ID_Medicamento:{operator:'=', value:req.body.ID_Medicamento}}, function(err, response) {
+    if (err) throw err;
+    res.json({bandera:true});
+  });
+});
+router.post('/DeletingMedicine/:ID_Medicamento',function(req, res, next){
+  var query="DELETE FROM Medicamento WHERE ID_Medicamento="+"'"+req.params.ID_Medicamento+"'";
+  global.conexion.query(query,function(err, result,fields){
+   if(err) throw err;
+   res.json({bandera:true});
+  });
+});
+//============================================================================
+//=======================================Hemodialisis=========================
+router.get('/GettingHemodialisisSession/:ID_Cita', function(req,res, next){
+ var query="SELECT * FROM Hemodialisis WHERE ID_Cita="+"'"+req.params.ID_Cita+"'";
+ global.conexion.query(query, function(err, result, fields){
+  if(err) throw err;
+  res.json(result);
+ });
+});
+router.post('/NewHemodialisisData/HemoData', function(req, res, next){
+  var Hemodialisis={ID_Cita:req.body.ID_Cita, startDate:req.body.startDate, endDate:req.body.endDate};
+  var startDate=moment(req.body.startDate,'MM-DD-YYYY HH:mm'), endDate=moment(req.body.endDate,'MM-DD-YYYY HH:mm');
+    var Today=moment().format('MM-DD-YYYY');
+    var Hoy=moment(Today, 'MM-DD-YYYY HH:mm');
+    console.log(startDate.isBefore(Hoy));
+    if(startDate.isBefore(Hoy)){
+     res.json({bandera:false});
+    }else{
+      var query="SELECT * FROM Hemodialisis";
+  global.conexion.query(query, function(err, response){
+   if(CheckingDates(req.body, response)){
+    global.conexion.insert('Hemodialisis', Hemodialisis, function(err, response){
+     if(err) throw err;
+     var ConsultaToUpdate={Dialisis:1};
+      global.conexion.update('Consultas', ConsultaToUpdate, {ID_Consultas:{operator:'=', value:req.body.idConsulta}}, function(err, response) {
+       if(err) throw err;
+       res.json({bandera:true});
+      });
+    });
+  }else{
+    res.json({bandera:false});
+  }
+  });
+    }
+});
+router.post('/UpdatingHemodialisisData/HemoData', function(req,res,next){
+  var Hemodialisis={ID_Cita:req.body.ID_Cita, startDate:req.body.startDate, endDate:req.body.endDate};
+  var startDate=moment(req.body.startDate,'MM-DD-YYYY HH:mm'), endDate=moment(req.body.endDate,'MM-DD-YYYY HH:mm');
+    var Today=moment().format('MM-DD-YYYY');
+    var Hoy=moment(Today, 'MM-DD-YYYY HH:mm');
+    if(startDate.isBefore(Hoy)){
+     res.json({bandera:false});
+    }else{
+       var query="SELECT * FROM Hemodialisis";
+  global.conexion.query(query, function(err, response){
+    if(CheckingDatesUpdating(req.body,response)){
+      global.conexion.update('Hemodialisis', Hemodialisis, {ID_Hemodialisis:{operator:'=', value:req.body.ID_Hemodialisis}}, function(err, response){
+              if(err) throw err; 
+
+              res.json({bandera: true});
+      });
+    }else{
+    res.json({bandera:false});
+    }
+  });
+    }
+});
+router.get('/GetAllHemodialisisSession', function(req,res,next){
+ var query="SELECT * FROM Hemodialisis";
+ global.conexion.query(query, function(err, response){
+  if (err) throw err;
+  var ToReturn=[];
+  response.forEach(function(element, index,array){
+    var startD=moment(element.startDate,'MM-DD-YYYY HH:mm'), endD=moment(element.endDate,'MM-DD-YYYY HH:mm'), startDate=moment().format('MM-DD-YYYY HH:mm');;
+    var diff = moment.preciseDiff(startD, startDate, true);
+    if(diff.years==0&&diff.days==0){
+        ToReturn[index]=element;
+    }
+  });
+  res.json(ToReturn);
+ });
+});
+router.get('/GetAllHemodialisisSessionUpd/HemoData', function(req,res,next){
+ var query="SELECT * FROM Hemodialisis";
+ global.conexion.query(query, function(err, response){
+  if (err) throw err;
+  var ToReturn=[];
+  response.forEach(function(element, index,array){
+    var startD=moment(element.startDate,'MM-DD-YYYY HH:mm'), endD=moment(element.endDate,'MM-DD-YYYY HH:mm'), startDate=moment(req.body.startDate,'MM-DD-YYYY HH:mm');
+    var diff = moment.preciseDiff(startD, startDate, true);
+    if(diff.years==0&&diff.days==0){
+        ToReturn[index]=element;
+    }
+  });
+  res.json(ToReturn);
+ });
+});
+//====================================FinishSchetch===========================
+router.get('/FinishSchetch/:ID_Consultas', function(req,res,err){
+ var ToUpdate={Terminado:0};
+ global.conexion.update('Consultas',ToUpdate,{ID_Consultas:{operator:'=', value:req.params.ID_Consultas}}, function(err, response){
+ if(err) throw err;
+ res.json({bandera:true});
+ });
+});
+//============================================================================
+router.get('/GettingTimes/:HemoDuration', function(req,res, next){
+  var array=[];
+  var query="SELECT * FROM Consultas";
+  global.conexion.query(query, function(err, response){
+   if(err) throw err;
+   var m1 = moment('2011-01-01 12:00:00','YYYY-MM-DD HH:mm');
+   var m2 = moment('2011-01-01 14:00:00','YYYY-MM-DD HH:mm');
+   var diff = moment.preciseDiff(m1, m2, true);
+   res.json(diff);
+   //10-21-2018 12:00
+   
+  });
+  /*var startDate="2017-03-14 "
+  var myDate = "2017-04-14 00:00:00"; 
+  var myDay =  "2017-04-14 15:00:00"
+var status = moment(myDate).add(22, 'hours').format('YYYY-MM-DD HH:mm:ss');
+  for(var i=1; i<25;i++){
+    console.log("sumo i "+ i);
+    var mom2= moment(myDate).add(i, 'hours').format('YYYY-MM-DD HH:mm');
+   array[i]=mom2;
+  }
+
+  res.json(array);*/
+});
 //=========================================Support functions for patients data
 async function insertingPatient(PatientInformation){
   global.conexion.insert('Paciente', PatientInformation, function(err, response) {
@@ -452,7 +607,79 @@ function FindingDuplicateHealtyInfo(DataFromForm,AllData){
     return false;
   }
 }
+async function CheckingDates(data, AllData){
+   var bandera=true;
+  AllData.every(function(element, index,array){
+    //var m1 = moment('2011-01-01 12:00:00','MM-DD-YYYY HH:mm');
+   
+    var startD=moment(element.startDate,'MM-DD-YYYY HH:mm'), endD=moment(element.endDate,'MM-DD-YYYY HH:mm'), startDate=moment(data.startDate,'MM-DD-YYYY HH:mm'), endDate=moment(data.endDate,'MM-DD-YYYY HH:mm');
+    var diff = moment.preciseDiff(startD, startDate, true);
+    var Today=moment().format('MM-DD-YYYY');
+    var Hoy=moment(Today, 'MM-DD-YYYY HH:mm');
 
+    //var diff = moment.preciseDiff(m1, m2, true);
+   if(startDate.isAfter(startD)&&startDate.isBefore(endD) || endDate.isAfter(startD)&&endDate.isBefore(endD)){
+     bandera=false;
+     return false;
+    }else if(diff.years==0&&diff.months==0&&diff.days==0){
+       if(diff.hours==0){
+        bandera=false;
+        return false;
+       }
+    }
+  });
+
+  
+   return bandera;
+  
+}
+function CheckingDatesUpdating(data,AllData){
+  var bandera=true,banderaChica=false,banderaHoy=true;
+  AllData.every(function(element, index,array){
+    if(element.ID_Hemodialisis==data.ID_Hemodialisis){
+      var startD=moment(element.startDate,'MM-DD-YYYY HH:mm'), endD=moment(element.endDate,'MM-DD-YYYY HH:mm'), startDate=moment(data.startDate,'MM-DD-YYYY HH:mm'), endDate=moment(data.endDate,'MM-DD-YYYY HH:mm');
+      var diff = moment.preciseDiff(startD, startDate, true);
+      var diff2= moment.preciseDiff(endD, endDate, true);
+      var Today=moment().format('MM-DD-YYYY');
+      var Hoy=moment(Today, 'MM-DD-YYYY HH:mm');
+      if(startDate.isBefore(Hoy)){
+        console.log("entro");
+        banderaHoy=false;
+        return false;
+      }
+      else if(diff.years==0&&diff.months==0&&diff.days==0&&diff.hours==0&&diff.minutes&&diff2.years==0&&diff2.months==0&&diff2.days==0&&diff2.hours==0&&diff2.minutes==0){
+          console.log("entro x2");
+          banderaChica=true;
+      }
+    }
+      var startD=moment(element.startDate,'MM-DD-YYYY HH:mm'), endD=moment(element.endDate,'MM-DD-YYYY HH:mm'), startDate=moment(data.startDate,'MM-DD-YYYY HH:mm'), endDate=moment(data.endDate,'MM-DD-YYYY HH:mm');
+    var diff = moment.preciseDiff(startD, startDate, true);
+    var Today=moment().format('MM-DD-YYYY');
+    var Hoy=moment(Today, 'MM-DD-YYYY HH:mm');
+    //var diff = moment.preciseDiff(m1, m2, true);
+    if(startDate.isAfter(startD)&&startDate.isBefore(endD) || endDate.isAfter(startD)&&endDate.isBefore(endD)){
+     bandera=false;
+     return false;
+    }else if(diff.years==0&&diff.months==0&&diff.days==0){
+       if(diff.hours==0){
+        bandera=false;
+        return false;
+       }
+      }else if(startDate.isBefore(Hoy)){
+        bandera=false;
+        return false;
+      }
+    
+  });
+  console.log(banderaChica+" "+bandera);
+  if(banderaChica){
+    return banderaChica;
+  }else if(!banderaHoy){
+   return banderaHoy;
+  }else{
+    return bandera;
+  }
+}
  function FindingDuplicateRecipesUpdating(DataFromForm, AllData){
   var bandera=true;
   AllData.forEach(function(element, index,array){

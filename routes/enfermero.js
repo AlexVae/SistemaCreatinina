@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 var underscore=require('underscore');
 var moment= require('moment');
+var moment1 = require('moment-precise-range-plugin');
+var moment2=require('moment-range');
 //======================Start=======================
 router.get('/', function(req, res, next) {
   //res.render('Enfermero/Prueba', { title: 'Bienvenido', otroTexto: 'Medico' });
@@ -136,6 +138,124 @@ router.post('/NewSchechHealty/SchechInfo', function(req, res, next) {
   });
   
 //====================================================================
+//=============================Hemodialisis===========================
+router.get('/GetTodayHemodialisisInfo',function(req,res,next){
+  var Today=moment().format('MM-DD-YYYY');
+ var query="SELECT * FROM `Citas` AS C INNER JOIN Consultas AS CC ON C.ID_Citas =CC.ID_Cita INNER JOIN Paciente AS P ON C.ID_Paciente=P.ID_Paciente LEFT JOIN Usuario AS U ON C.ID_Paciente=U.IdUsuario INNER JOIN Hemodialisis AS H ON C.ID_Citas=H.ID_Cita WHERE H.Terminado=1 AND H.Fecha="+"'"+Today+"'";
+ global.conexion.query(query, function (err, result, fields) {
+    if (err) throw err;
+    res.json(result);
+ });
+
+});
+router.get('/GettingInfo/:IdUsuario/', function(req,res,next){
+ var Today=moment().format('MM-DD-YYYY');
+ var query="SELECT * FROM `Citas` AS C INNER JOIN Consultas AS CC ON C.ID_Citas =CC.ID_Cita INNER JOIN Paciente AS P ON C.ID_Paciente=P.ID_Paciente LEFT JOIN Usuario AS U ON C.ID_Paciente=U.IdUsuario INNER JOIN Hemodialisis AS H ON C.ID_Citas=H.ID_Cita WHERE H.Terminado=1 AND H.Fecha="+"'"+Today+"'"+" AND U.IdUsuario="+"'"+req.params.IdUsuario+"'";
+ global.conexion.query(query, function (err, result, fields) {
+    if (err) throw err;
+    query="SELECT * FROM Usuario AS U WHERE U.IdUsuario="+"'"+result[0].ID_Personal_Salud+"'";
+     global.conexion.query(query, function (err, result1, fields) {
+     if(err) throw err;
+      var startD=moment(result[0].startDate,'MM-DD-YYYY HH:mm'), endD=moment(result[0].endDate,'MM-DD-YYYY HH:mm');
+      var diff = moment.preciseDiff(startD, endD, true);
+     result[0].Medico_Tratante=result1[0].Nombre_Usuario+" "+result1[0].Apellido_Paterno_usuario;
+     result[0].Duracion=diff.hours;
+    res.json(result);
+     });
+ });
+});
+//============================PreHemodialisis=========================
+ router.get('/GetAllPreData/:ID_Hemodialisis', function(req,res,next){
+  var query="SELECT * FROM PreProcedimiento WHERE ID_Hemodialisis="+"'"+req.params.ID_Hemodialisis+"'";
+  global.conexion.query(query, function(err, result, fields){
+   if(err) throw err;
+   res.json(result);
+  });
+ });
+ router.post('/NewPreData/PreData',function(req,res,next){
+   var Hemodialisis={ID_Hemodialisis:req.body.ID_Hemodialisis,PesoSeco:req.body.PesoSeco,PesoPreHd:req.body.PesoPreHd,Uf:req.body.Uf,RemocionLiquidos:req.body.RemocionLiquidos,DxTx:req.body.DxTx,SPO2:req.body.SPO2,TC:req.body.TC,FR:req.body.FR,FCPre:req.body.FCPre,Filtro:req.body.Filtro,QB:req.body.QB,QD:req.body.QD,Dializador:req.body.Dializador,Heparina:req.body.Heparina,DosisIni:req.body.DosisIni,INF:req.body.INF,ProtocoloTrans:req.body.ProtocoloTrans,VSP:req.body.VSP,KTV:req.body.KTV,Hemo:req.body.Hemo,HB:req.body.HB,HC:req.body.HC,VIH:req.body.VIH};
+   global.conexion.insert('PreProcedimiento', Hemodialisis,function(err, response){
+    if(err) throw err;
+    var ToUpdate={PreDatos:1};
+    global.conexion.update('Hemodialisis',ToUpdate,{ID_Hemodialisis:{operator:'=', value:req.body.ID_Hemodialisis}},function(err, response) {
+      if(err) throw err;
+      return res.json({bandera:true});
+    });
+   });
+  });
+ router.post('/UpdatePreData/PreData',function(req,res,next){
+  var Hemodialisis={ID_Hemodialisis:req.body.ID_Hemodialisis,PesoSeco:req.body.PesoSeco,PesoPreHd:req.body.PesoPreHd,Uf:req.body.Uf,RemocionLiquidos:req.body.RemocionLiquidos,DxTx:req.body.DxTx,SPO2:req.body.SPO2,TC:req.body.TC,FR:req.body.FR,FCPre:req.body.FCPre,Filtro:req.body.Filtro,QB:req.body.QB,QD:req.body.QD,Dializador:req.body.Dializador,Heparina:req.body.Heparina,DosisIni:req.body.DosisIni,INF:req.body.INF,ProtocoloTrans:req.body.ProtocoloTrans,VSP:req.body.VSP,KTV:req.body.KTV,Hemo:req.body.Hemo,HB:req.body.HB,HC:req.body.HC,VIH:req.body.VIH};
+  global.conexion.update('PreProcedimiento',Hemodialisis,{idPreProcedimiento:{operator:'=', value:req.body.idPreProcedimiento}},function(err, response) {
+    if (err) throw err;
+    res.json({bandera:true});
+  });
+     
+ });
+//====================================================================
+//============================Antropometría===========================
+router.get('/GetAllAntroData/:ID_Hemodialisis', function(req,res,next){
+  var query="SELECT * FROM Datos_Antropometricos WHERE ID_Hemodialisis="+"'"+req.params.ID_Hemodialisis+"'";
+  global.conexion.query(query, function(err, result, fields){
+   if(err) throw err;
+   res.json(result);
+  });
+ });
+router.post('/NewAntroData/AntroData',function(req,res,next){
+   var Antropometria={PorGrasa: req.body.PorGrasa,MM:req.body.MM,PorAgua:req.body.PorAgua,GV:req.body.GV,IMC:req.body.IMC,PesoSeco:req.body.PesoSeco,Estatura:req.body.Estatura,CMB:req.body.CMB,CMUÑECA:req.body.CMUÑECA,PCT:req.body.PCT,Complexion:req.body.Complexion,AMBD:req.body.AMBD, ID_Hemodialisis:req.body.ID_Hemodialisis};
+   global.conexion.insert('Datos_Antropometricos', Antropometria,function(err, response){
+    if(err) throw err;
+    var ToUpdate={AntroDatos:1};
+    global.conexion.update('Hemodialisis',ToUpdate,{ID_Hemodialisis:{operator:'=', value:req.body.ID_Hemodialisis}},function(err, response) {
+      if(err) throw err;
+      return res.json({bandera:true});
+    });
+   });
+  });
+  router.post('/UpdateAntroData/AntroData',function(req,res,next){
+  var Antropometria={PorGrasa: req.body.PorGrasa,MM:req.body.MM,PorAgua:req.body.PorAgua,GV:req.body.GV,IMC:req.body.IMC,PesoSeco:req.body.PesoSeco,Estatura:req.body.Estatura,CMB:req.body.CMB,CMUÑECA:req.body.CMUÑECA,PCT:req.body.PCT,Complexion:req.body.Complexion,AMBD:req.body.AMBD, ID_Hemodialisis:req.body.ID_Hemodialisis};
+   global.conexion.update('Datos_Antropometricos',Antropometria,{ID_Datos_Antropometricos:{operator:'=', value:req.body.ID_Datos_Antropometricos}},function(err, response) {
+    if (err) throw err;
+    res.json({bandera:true});
+  });
+     
+ });
+//====================================================================
+//=============================Medicine===============================
+  router.get('/GettingMedicalInfo',function(req, res){
+   var query="SELECT * FROM Medicamento";
+   global.conexion.query(query, function(err, result, fields){
+      if(err) throw err;
+      result.forEach(function(element, index, array) {
+        if(element.ID_Medicamento==result[index].ID_Medicamento){
+          result[index].Nombre_cantidad=element.Nombre+" "+element.Dosis;
+         
+        }
+      });
+      res.json(result);
+    })
+  });
+  router.post('/NewMedicineDuringHemo/MedicineData', function(req,res,next){
+   var Medicine={ID_Hemodialisis:req.body.ID_Hemodialisis, ID_Medicamento:req.body.ID_Medicamento,Descripcion:req.body.Descripcion};
+   global.conexion.insert('MedicinaHemodialisis', Medicine,function(err, response){
+     if(err) throw err;
+     res.json({bandera:true});
+   });
+  });
+  router.get('/GettingActualMedicine/:ID_Hemodialisis/',function(req,res){
+ var query="SELECT * FROM `MedicinaHemodialisis` AS H INNER JOIN Medicamento AS M ON H.ID_Medicamento=M.ID_Medicamento WHERE H.ID_Hemodialisis="+"'"+req.params.ID_Hemodialisis+"'"
+ global.conexion.query(query, function(err, result, fields){
+ if(err) throw err;
+   result.forEach(function(element, index, array) {
+        if(element.ID_Medicamento==result[index].ID_Medicamento){
+          result[index].Nombre_cantidad=element.Nombre+" "+element.Dosis;
+          
+        }
+      });
+    res.json(result);
+ });
+});
+//====================================================================
+
 //==========SupportFunctions==========================================
 function CheckingLessDates(DateToCompare){
  var Today=moment().format('MM-DD-YYYY');

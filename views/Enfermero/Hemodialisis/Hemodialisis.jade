@@ -8,6 +8,58 @@ block content
 			article
 				h1 Sesiones de hemodiálisis <br><br>
 				.Nurse-Container(ng-app="HemodialisisApp",ng-controller="HemodialisisController")
+					.popup(dx-popup="popupPrincipal" id="altura")
+						div(data-options="dxTemplate: { name:'info' }")
+							div(dx-scroll-view="pruebaScrollView")
+								.sf-form-container
+									h3 Datos Pre-procedimiento 
+									.widget-container
+									a(href="#", onclick="slideFormContainer('none');"): i.lnr.lnr-cross(aria-hidden="true")
+									#form(dx-form="formOptionsStart")
+									<br>
+									.SfButtonCreate(dx-button="SfButtonCreateH")
+									.SfButtonUpdate(dx-button="SfButtonUpdateH")
+								.sf-form-container1
+									h2 Antropometría
+									.widget-container
+									a(href="#", onclick="slideFormContainer('none1');"): i.lnr.lnr-cross(aria-hidden="true")
+									#form(dx-form="formOptionsAntro")
+									<br>
+									.SfButtonCreate1(dx-button="SfButtonCreateA")
+									.SfButtonUpdate1(dx-button="SfButtonUpdateA")
+								.sf-form-container2
+									h3 Medicamentos usados en sesión de hemodiálisis
+									.widget-container
+									a(href="#", onclick="slideFormContainer('none2');"): i.lnr.lnr-cross(aria-hidden="true")
+									#form(dx-form="formOptionsMedicine")
+									<br>
+									.SfButtonCreate2(dx-button="SfButtonCreateM")
+								.widget-container
+									#gridContainer(dx-data-grid="dataGridMoreInfo")
+									<br>
+									h4 Verificación pre-procedimiento
+									<br>
+									#gridContainer(dx-data-grid="dataGridPreInfo")
+									<br>
+									h4 Antropometría
+									<br>
+									#gridContainer(dx-data-grid="dataGridAntroInfo")
+									h4 Medicinas usadas durante la sesión 
+									<br>
+									#gridContainer(dx-data-grid="dataGridMedicines")
+								<br>
+								<br>
+								<br>
+								<br>
+								table
+									tr
+										td
+											div(dx-button="showFormAuxDatosInicio")
+										td
+											div(dx-button="showFormAuxDatosAntro")
+										td
+											div(dx-button="showFormAuxMedicine")
+					#gridContainer(dx-data-grid="dataGridOptions")
 				
 			
 		

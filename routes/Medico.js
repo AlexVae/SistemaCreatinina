@@ -391,7 +391,7 @@ router.get('/GettingHemodialisisSession/:ID_Cita', function(req,res, next){
  });
 });
 router.post('/NewHemodialisisData/HemoData', function(req, res, next){
-  var Hemodialisis={ID_Cita:req.body.ID_Cita, startDate:req.body.startDate, endDate:req.body.endDate};
+  var Hemodialisis={ID_Cita:req.body.ID_Cita, startDate:req.body.startDate, endDate:req.body.endDate, Fecha:req.body.Fecha};
   var startDate=moment(req.body.startDate,'MM-DD-YYYY HH:mm'), endDate=moment(req.body.endDate,'MM-DD-YYYY HH:mm');
     var Today=moment().format('MM-DD-YYYY');
     var Hoy=moment(Today, 'MM-DD-YYYY HH:mm');
@@ -417,7 +417,7 @@ router.post('/NewHemodialisisData/HemoData', function(req, res, next){
     }
 });
 router.post('/UpdatingHemodialisisData/HemoData', function(req,res,next){
-  var Hemodialisis={ID_Cita:req.body.ID_Cita, startDate:req.body.startDate, endDate:req.body.endDate};
+  var Hemodialisis={ID_Cita:req.body.ID_Cita, startDate:req.body.startDate, endDate:req.body.endDate, Fecha:req.body.Fecha};
   var startDate=moment(req.body.startDate,'MM-DD-YYYY HH:mm'), endDate=moment(req.body.endDate,'MM-DD-YYYY HH:mm');
     var Today=moment().format('MM-DD-YYYY');
     var Hoy=moment(Today, 'MM-DD-YYYY HH:mm');

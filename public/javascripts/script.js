@@ -14,7 +14,7 @@ $(document).ready(function(){
             $('.content-menu').css("overflow-y","hidden");
         }
 
-        if($(window).width() > 983){
+        if($(window).width() > 1000){
             $('.content-menu').show();
 			$('.prueba').hide();
         }else{

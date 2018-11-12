@@ -630,7 +630,7 @@ ConsultaApp.controller('ConsultaController', function DemoController($scope,$htt
         }
 
         ]
-};
+   };
    $scope.formOptionsReceta={
         colCount: 4,
         labelLocation: "top",
@@ -1206,7 +1206,7 @@ ConsultaApp.controller('ConsultaController', function DemoController($scope,$htt
         columnAutoWidth: true,
          "export": {
             enabled: true,
-            fileName: "ContactosEmergenciaDePaciente",
+            fileName: "MisDatosDeConsultaHoy",
             allowExportSelectedData: true,
             placeholder: 'Exportar archivo'
         },
@@ -1560,6 +1560,7 @@ $scope.SfButtonCreateH={
                 data.endDate=moment(data.endDate).format('MM-DD-YYYY HH:mm');
                 data.ID_Cita=ConcultaActual.ID_Cita;
                 data.idConsulta=ConcultaActual.ID_Consultas;
+                data.Fecha=moment(data.startDate).format('MM-DD-YYYY');
                 NewHemoData(data);
                 ReturnHemodialisisToday();
                 gridInstanceHemo.refresh();
@@ -1582,6 +1583,7 @@ $scope.SfButtonUpdateH={
                 data.endDate=moment(data.endDate).format('MM-DD-YYYY HH:mm');
                 data.ID_Cita=ConcultaActual.ID_Cita;
                 data.idConsulta=ConcultaActual.ID_Consultas;
+                data.Fecha=moment(data.startDate).format('MM-DD-YYYY');
                 console.log(data);
                 UpdateHemoData(data);
                 gridInstanceHemo.refresh();

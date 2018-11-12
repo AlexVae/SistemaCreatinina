@@ -50,7 +50,7 @@ DevExpress.localization.loadMessages(
 //SE ELIMINA
 
 var edades = ["18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40"];
-
+var dializador=[{dializador:"k+"},{dializador:"Ca++"},{dializador:"Na+"}];
 var StudentsformData = {
     "Name": "",
     "LastNames": "",
@@ -894,5 +894,95 @@ async function UpdateMedicalAppointment(SchechInfo){
         
     }); 
 }
+ //================================HemodialisisSession========================
+    async function HemodialisisSession(PreData){
+    $.post(AdressFrontServer+'/Nurse/NewPreData/PreData',PreData, function (data) {
+    }).done(function (data) {
+     if(data.bandera){
+      NotificationSuccess("Registro de datos pre-hemodiálisis correcto.");
+      slideFormContainer('none');
+     
+      }
+      
+    }).fail(function () {
+         NotificationError("Error al guardar registro");
+
+    return false;
+    }).always(function () {
+        
+    }); 
+}
+   async function UpdateHemodialisisSession(PreData){
+    $.post(AdressFrontServer+'/Nurse/UpdatePreData/PreData',PreData, function (data) {
+    }).done(function (data) {
+     if(data.bandera){
+      NotificationSuccess("Actualización de datos pre-hemodiálisis correcto.");
+      slideFormContainer('none');
+     
+      }
+      
+    }).fail(function () {
+         NotificationError("Error al guardar registro");
+
+    return false;
+    }).always(function () {
+        
+    }); 
+}
+async function NewAntroData(AntroData){
+   $.post(AdressFrontServer+'/Nurse/NewAntroData/AntroData',AntroData, function (data) {
+    }).done(function (data) {
+     if(data.bandera){
+      NotificationSuccess("Se insertaron datos antropométricos correctamente.");
+      slideFormContainer('none1');
+     
+      }
+      
+    }).fail(function () {
+         NotificationError("Error al guardar registro");
+
+    return false;
+    }).always(function () {
+        
+    }); 
+ 
+}
+async function UpdateAntroData(AntroData){
+   $.post(AdressFrontServer+'/Nurse/UpdateAntroData/AntroData',AntroData, function (data) {
+    }).done(function (data) {
+     if(data.bandera){
+      NotificationSuccess("Se actualizaron datos antropométricos correctamente.");
+      slideFormContainer('none1');
+     
+      }
+      
+    }).fail(function () {
+         NotificationError("Error al guardar registro");
+
+    return false;
+    }).always(function () {
+        
+    }); 
+ 
+}
+async function CreateMedicineData(MedicineData){
+   $.post(AdressFrontServer+'/Nurse/NewMedicineDuringHemo/MedicineData',MedicineData, function (data) {
+    }).done(function (data) {
+     if(data.bandera){
+      NotificationSuccess("Se agregarn datos de medicamentos a la sesión.");
+      slideFormContainer('none2');
+     
+      }
+      
+    }).fail(function () {
+         NotificationError("Error al guardar registro");
+
+    return false;
+    }).always(function () {
+        
+    }); 
+ 
+}
+
 //============================================================================
 

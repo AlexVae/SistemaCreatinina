@@ -969,7 +969,7 @@ async function CreateMedicineData(MedicineData){
    $.post(AdressFrontServer+'/Nurse/NewMedicineDuringHemo/MedicineData',MedicineData, function (data) {
     }).done(function (data) {
      if(data.bandera){
-      NotificationSuccess("Se agregarn datos de medicamentos a la sesión.");
+      NotificationSuccess("Se agregaron datos de medicamentos a la sesión.");
       slideFormContainer('none2');
      
       }
@@ -983,6 +983,58 @@ async function CreateMedicineData(MedicineData){
     }); 
  
 }
+async function UpdateMedicineData(MedicineData){
+   $.post(AdressFrontServer+'/Nurse/UpdateMedicineDuringHemo/MedicineData',MedicineData, function (data) {
+    }).done(function (data) {
+     if(data.bandera){
+      NotificationSuccess("Se modificaron los datos de medicamentos en la sesión.");
+      slideFormContainer('none2');
+     
+      }
+      
+    }).fail(function () {
+         NotificationError("Error al guardar registro");
 
+    return false;
+    }).always(function () {
+        
+    }); 
+ 
+}
+async function DeleteMedicineData(ID_MedicinaHemodialisis){
+   $.post(AdressFrontServer+'/Nurse/DeletingMedicine/'+ID_MedicinaHemodialisis, function (data) {
+    }).done(function (data) {
+     if(data.bandera){
+      NotificationSuccess("Se eliminaron los datos de medicamentos en la sesión.");
+      slideFormContainer('none2');
+     
+      }
+      
+    }).fail(function () {
+         NotificationError("Error al guardar registro");
+
+    return false;
+    }).always(function () {
+        
+    }); 
+ 
+}
+async function StartHemoSession(ID_Hemodialisis){
+  $.post(AdressFrontServer+'/Nurse/SessionStart/'+ID_Hemodialisis, function (data) {
+    }).done(function (data) {
+     if(data.bandera){
+      NotificationSuccess("Se inicia el proceso de hemodiálisis.");
+      
+     
+      }
+      
+    }).fail(function () {
+         NotificationError("Error al guardar registro");
+
+    return false;
+    }).always(function () {
+        
+    }); 
+}
 //============================================================================
 

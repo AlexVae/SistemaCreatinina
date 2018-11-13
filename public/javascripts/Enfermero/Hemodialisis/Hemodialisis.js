@@ -1,5 +1,6 @@
 var HemodialisisApp = angular.module('HemodialisisApp', ['dx']),popupPrincipal,PreDatos,AntroDatos, popupInicio,ConsultaActual,banderaGrids=false, idUsuario, gridInstanceInfo,HemodialisisActual;
-var subformInstanceStart, gridInstancePre,subformInstanceAntro, gridInstanceAntro,subformInstanceMedicine, gridInstanceMedicine;
+var subformInstanceStart, gridInstancePre,subformInstanceAntro, gridInstanceAntro,subformInstanceMedicine, gridInstanceMedicine, gridInstanceCreatinina;
+var socket = io.connect('http://localhost:3000', { 'forceNew': true });
 HemodialisisApp.controller('HemodialisisController', function DemoController($scope,$http) {
 //================================Formulario=================================
     $scope.formOptionsStart={
@@ -870,6 +871,35 @@ HemodialisisApp.controller('HemodialisisController', function DemoController($sc
             DeleteProduct(key);
         }
     });
+  var Creatinina =  new DevExpress.data.CustomStore({
+        load: function () {
+            //showLoader();
+            return $http({
+                crossDomain: true,
+                type: 'GET',
+                headers: {
+                    'Content-Type': undefined
+                },
+                async: false,
+                url: "http://localhost:3000/Nurse/GetCreatininaData/"+HemodialisisActual.ID_Hemodialisis,
+                data: { symbol: 'ctsh' },
+                dataType: "jsonp",
+                jsonpCallback: 'fnsuccesscallback'
+            })
+                .then(function (response) {
+                   // disableLoader();
+                     //console.log(response.data);
+                    // ConcultaActual=response.data.ID_Consultas; 
+                    return { data: response.data };
+                }, function (response) {
+                    //disableLoader();
+                    //return $q.reject("Data Loading Error");
+                });
+        },
+        remove: function (key) {
+            DeleteProduct(key);
+        }
+    });
 //===========================================================================
 //==================================Popup====================================
   $scope.visiblePopup = false;
@@ -915,6 +945,26 @@ HemodialisisApp.controller('HemodialisisController', function DemoController($sc
         closeOnOutsideClick: true,
         bindingOptions: {
             visible: "visiblePopupInicio",
+        }
+    };
+    //Creatinina
+    $scope.visiblePopupCreatinina = false;
+    $scope.showInfoCreatinina = function () {
+            $scope.visiblePopupCreatinina = true;
+    };
+    $scope.popupCreatinina={
+        width: "90%",
+        height: "40%",
+        contentTemplate: "info",
+        showTitle: true,
+        title: "Registro de Creatinina",
+        dragEnabled: false,
+        scrolling: {
+            mode: "virtual"
+        },
+        closeOnOutsideClick: false,
+        bindingOptions: {
+            visible: "visiblePopupCreatinina",
         }
     };
 
@@ -1097,7 +1147,10 @@ HemodialisisApp.controller('HemodialisisController', function DemoController($sc
             gridInstanceMedicine = e.component;
         },
         onRowClick: function(e){
-        	
+        	subformInstanceMedicine.resetValues();
+        	ReturnMedicineInformation();
+        	subformInstanceMedicine.updateData(e.data);
+        	slideFormContainer("block2", "edit1");
         },
         columnAutoWeigth: true,
         columnAutoWidth: true,
@@ -1115,7 +1168,9 @@ HemodialisisApp.controller('HemodialisisController', function DemoController($sc
                             var result = DevExpress.ui.dialog.confirm("¿Se requiere eliminar este registro?", "Se necesita una confirmación...");
                             result.done(function (dialogResult) {
                                 if (dialogResult == true) {
-                                  
+                                   DeleteMedicineData(e.data.ID_MedicinaHemodialisis);
+                                   gridInstanceMedicine.refresh();
+                                   gridInstanceMedicine.repaint();
                                    // DeleteEmployee(e.data.EmployeeId, e.data.Name, e.data.PaternalLastName, e.data.MaternalLastName, e.data.CompanyId, e.data.SmartFlowTagId, e.data.NoEmployee);
                                 }
                             
@@ -1128,6 +1183,31 @@ HemodialisisApp.controller('HemodialisisController', function DemoController($sc
 
             }
         ]
+   };
+   $scope.dataGridCreatinina={
+       dataSource: Creatinina,
+       noDataText: "No hay datos de Creatinina.",
+       onInitialized: function (e) {
+            gridInstanceCreatinina = e.component;
+        },
+        onRowClick: function(e){
+        	subformInstanceAntro.resetValues();
+        	subformInstanceAntro.updateData(e.data);
+        	slideFormContainer("block1", "edit2");
+        },
+        columnAutoWeigth: true,
+        columnAutoWidth: true,
+        searchPanel: {
+            placeholder:"Buscar...",
+            visible: true,
+            highlightCaseSensitive: true
+        },columns: [
+             { caption: "Periodo", dataField: "Periodo",alignment: 'center' },
+             { caption: "Valor de Creatinina", dataField: "Valor",alignment: 'center' },
+             { caption: "IFG", dataField: "IFG",alignment: 'center' }
+             ],
+             showBorders: true
+    
    };
 //===========================================================================
 
@@ -1171,6 +1251,38 @@ HemodialisisApp.controller('HemodialisisController', function DemoController($sc
         	
         }
   };
+  $scope.showFormAuxCreatinina={
+    text: "Creatinina",
+        icon: 'lnr lnr-user',
+        onClick: function (e) {
+            
+              $scope.showInfoCreatinina();
+            
+        	
+        	
+        }
+  };
+  $scope.FinishSession={
+        text: "Terminar sesión",
+        type: "danger",
+        useSubmitBehavior: true,
+        validationGroup: "ClinicData",
+        icon: '',
+        onClick: function () {
+            var result = DevExpress.ui.dialog.confirm("¿Se encuentra seguro de querer terminar la sesión de hemodiálisis?", "Se necesita una confirmación");
+                  result.done(function (dialogResult) {
+                      //alert(dialogResult);
+                    if (dialogResult) {
+                     if(PreDatos==1&&AntroDatos==1&&InicioCreatinina==1&&FinCreatinina){
+                     
+              }else{
+                DevExpress.ui.dialog.alert("Se necesita primero guardar datos antropométricos, datos pre-hemodiálisis y tener registro de creatinina en sangre.", "¡Atención!");
+              }
+                      }
+                });
+             
+        }
+     };
   //PreHemodialisis
      $scope.SfButtonCreateH={
         text: "Registrar",
@@ -1259,12 +1371,63 @@ HemodialisisApp.controller('HemodialisisController', function DemoController($sc
             }
         }
     };
+    $scope.SfButtonUpdateM={
+    	text: "Registrar",
+        type: "default",
+        useSubmitBehavior: true,
+        validationGroup: "RecipeData",
+        onClick: function () {
+            if (subformInstanceMedicine.validate().isValid) {
+                var data = subformInstanceMedicine.option("formData"), bandera = true;
+                data.ID_Hemodialisis=HemodialisisActual.ID_Hemodialisis;
+                UpdateMedicineData(data);
+                gridInstanceMedicine.refresh();
+                gridInstanceMedicine.repaint();
+            }
+        }
+    }
+    //Hemodialisis
+    $scope.DisponibilidadInicio=true;
+    $scope.InicioCreatinina={
+        text: "Inicio de hemodiálisis",
+        icon: 'lnr lnr-heart-pulse',
+        onClick: function (e) {
+        	if(HemodialisisActual.InicioCreatinina==0){
+                StartHemoSession(HemodialisisActual.ID_Hemodialisis);
+             HemodialisisActual.InicioCreatinina=1;
+            }else{
+               DevExpress.ui.dialog.alert("Atención, se debe proseguir al fin de la sesión.","Alerta");
+            }
+        }
+    };
+    $scope.FinCreatinina={
+    	text: "Fin de hemodiálisis",
+        icon: 'lnr lnr-heart-pulse',
+        onClick: function (e) {
+        	if(HemodialisisActual.InicioCreatinina==1){
+                //PODEMOS ACTUALIZAR
+                HemodialisisActual.FinCreatinina=1;
+            }else if(HemodialisisActual.FinCreatinina==1){
+                DevExpress.ui.dialog.alert("Atención, se han terminado todas las sesiones.","Alerta");
+            }else{
+                DevExpress.ui.dialog.alert("Atención, necesitas iniciar la sesión.","Alerta");
+            }
+        }
+    }
 //===========================================================================
 $scope.pruebaScrollView={
              height: '100%',
              width: '100%',
              direction: 'both'
 };
+socket.on('messages', function(data) {
+    try{
+      gridInstanceCreatinina.refresh();
+    gridInstanceCreatinina.repaint();
+    }catch(e){
+
+    }
+});
 async function ReturnMedicineInformation(){
     var dataToForm = $.ajax({
 

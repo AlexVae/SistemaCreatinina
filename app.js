@@ -63,6 +63,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/Healty',medicoRouter);
 app.use('/Nurse',enfermeroRouter);
+app.use(cookieParser());
 app.use(session({'resave':true, 'saveUninitialized' : true, 'secret' : 'Dacomp' })); //Manejo con sesiones
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

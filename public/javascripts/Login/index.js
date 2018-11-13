@@ -14,26 +14,18 @@ RegistroApp.controller('RegistroController', function DemoController($scope) {
             caption: "Inicio de sesión",
 			
             items: [{
-                dataField: "Nombre_Usuario",
-                label: { text: "Nombre de usuario" },
-				
-				editorOptions : {
-                    maxLength: '15'
-					//placeholder:"Nombre de usuario"
-					//readOnly: true
+                dataField: "Correo_usuario",
+                label: { text: "Correo" },
+                editorOptions : {
+                   placeholder: "Correo@ejemplo.com"
                 },
                 validationRules: [{
-                    type: "required",
-                    message: "Se requiere la introducción del nombre de usuario"
-                },{
                     type: "pattern",
-                    pattern: "^[a-zA-ZñÑóÓáÁéÉíÍúÚ0-9]+$",
-                    message: "No utilizar caracteres diferentes a letras o números en el usuario a registrar"
-
+                    pattern: "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$",
+                    message: "Introducir una dirección de correo electrónico válida, ej: micorreo@ejemplo.com"
                 },{
-                    type: "stringLength",
-                    min: 4,
-                    message: "Introducir  mínimo 4 caracteres del nombre de usuario."
+                    type: "required",
+                    message: "Se requiere la introducción de correo electrónico."
                 }]
             },{
 				dataField: "Contrasena",
@@ -70,21 +62,34 @@ RegistroApp.controller('RegistroController', function DemoController($scope) {
 			
             if (formInstanceLogin.validate().isValid) {
                 var data = formInstanceLogin.option("formData"), bandera = true;
-				//console.log(data);
-                var consulta=existencia(data);
-                if(consulta){
-                    NotificationSuccess("Inicio correcto de sesión: "+  data.Nombre_Usuario );
-                } else{
-                    alert("Inicio de sesión negativo");
-                }
-               /* if(data.UserName==consulta.UserName && data.Pass==consulta.Pass){
-				DevExpress.ui.dialog.alert("Bienvenido, "+consulta.UserName, "Buen día");	
-				}else if(data.UserName=="Paciente" && data.Password=="Paciente"){
-				DevExpress.ui.dialog.alert("Bienvenido, Paciente.", "Prueba");	
-				}else{
-					DevExpress.ui.dialog.alert("Claves de inicio erroneas.", "Prueba");
-				}*/
+				 console.log(data);
+                //=======================
+                $.post('http://localhost:3000'+'/loginStart/'+'loginData',data, function (data) {
+                  }).done(function (data) {
+                    //NotificationSuccess("Inicio correcto de sesión: "+data.UserName );
+                    if(data.bandera==false){
+                 NotificationError("Claves de acceso erroneas");
+                    }else{
+                        console.log(data);
+                     NotificationSuccess("Inicio correcto de sesión: "+data[0].Correo_usuario);
+                    }
+                    //return bandera;
+                  }).fail(function () {
+                     
+                  }).always(function () {
+                      
+                  });
+                //=======================
             }
         }
     };
+
+
+
+
+
+
+
+
+
 	});

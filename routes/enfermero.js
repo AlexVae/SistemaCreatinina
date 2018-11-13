@@ -4,6 +4,7 @@ var underscore=require('underscore');
 var moment= require('moment');
 var moment1 = require('moment-precise-range-plugin');
 var moment2=require('moment-range');
+var Id_Hemo, periodo;
 //======================Start=======================
 router.get('/', function(req, res, next) {
   //res.render('Enfermero/Prueba', { title: 'Bienvenido', otroTexto: 'Medico' });
@@ -220,6 +221,166 @@ router.post('/NewAntroData/AntroData',function(req,res,next){
      
  });
 //====================================================================
+//============================Creatinina==============================
+  router.get('/GetCreatininaData/:ID_Hemodialisis', function(req,res,next){
+    var query="SELECT * FROM Datos_Bioquimicos_Sistema WHERE ID_Hemodialisis="+"'"+req.params.ID_Hemodialisis+"'";
+    global.conexion.query(query, function(err, result, fields){
+     if(err) throw err;
+     res.json(result);
+    });
+ });
+ router.get('/CalculatingIFGIni/:ID_Hemodialisis',function(req,res,next){
+   var query="SELECT * FROM Datos_Bioquimicos_Sistema AS DB INNER JOIN Hemodialisis AS H ON DB.ID_Hemodialisis=H.ID_Hemodialisis LEFT JOIN Citas AS C ON H.ID_Cita=C.ID_Citas LEFT JOIN Usuario AS U ON C.ID_Paciente=U.IdUsuario WHERE H.ID_Hemodialisis="+"'"+req.params.ID_Hemodialisis+"'"+" AND DB.Periodo='Inicial'";
+   global.conexion.query(query, function(err, result, fields){
+   if(err) throw err;
+   console.log(result[0]);
+   if(result[0].Sexo_usuario="Masculino"){
+    if(result[0].Valor<=.9){
+     var IFG=result[0].Valor/.9; 
+     IFG=Math.pow(IFG,-.411);
+     IFG=IFG*141; 
+     var Today=moment().format('MM-DD-YYYY'), BornPatientDate=moment(result[0].Fecha_Nacimiento_usuario,'MM-DD-YYYY');
+      var diff = moment.preciseDiff(Today, BornPatientDate, true);
+      var age=Math.pow(.993,diff.years);
+      IFG=IFG*age;
+      IFG=trunc(IFG,3);
+      console.log(IFG);
+      var ToUpdate={IFG:IFG};
+      UpdatingIFG(result,ToUpdate);
+      res.json({bandera:true});
+    }else{
+      var IFG=result[0].Valor/.9; 
+     IFG=Math.pow(IFG,-1.209);
+     IFG=IFG*141; 
+     var Today=moment().format('MM-DD-YYYY'), BornPatientDate=moment(result[0].Fecha_Nacimiento_usuario,'MM-DD-YYYY');
+      var diff = moment.preciseDiff(Today, BornPatientDate, true);
+      var age=Math.pow(.993,diff.years);
+      IFG=IFG*age;
+      IFG=trunc(IFG,3);
+      console.log(IFG);
+      var ToUpdate={IFG:IFG};
+      UpdatingIFG(result,ToUpdate);
+      res.json({bandera:true});
+    }
+   }else{
+     if(result[0].Valor<=.7){
+     var IFG=result[0].Valor/.7; 
+     IFG=Math.pow(IFG,-.309);
+     IFG=IFG*141; 
+     var Today=moment().format('MM-DD-YYYY'), BornPatientDate=moment(result[0].Fecha_Nacimiento_usuario,'MM-DD-YYYY');
+      var diff = moment.preciseDiff(Today, BornPatientDate, true);
+      var age=Math.pow(.993,diff.years);
+      IFG=IFG*age;
+      IFG=trunc(IFG,3);
+      console.log(IFG);
+      var ToUpdate={IFG:IFG};
+      UpdatingIFG(result,ToUpdate);
+      res.json({bandera:true});
+    }else{
+      var IFG=result[0].Valor/.7; 
+     IFG=Math.pow(IFG,-1.209);
+     IFG=IFG*141; 
+     var Today=moment().format('MM-DD-YYYY'), BornPatientDate=moment(result[0].Fecha_Nacimiento_usuario,'MM-DD-YYYY');
+      var diff = moment.preciseDiff(Today, BornPatientDate, true);
+      var age=Math.pow(.993,diff.years);
+      IFG=IFG*age;
+      IFG=trunc(IFG,3);
+      console.log(IFG);
+      var ToUpdate={IFG:IFG};
+      UpdatingIFG(result,ToUpdate);
+      res.json({bandera:true});
+    }
+   }
+  });
+ });
+ router.get('/CalculatingIFGFinal/:ID_Hemodialisis',function(req,res,next){
+   var query="SELECT * FROM Datos_Bioquimicos_Sistema AS DB INNER JOIN Hemodialisis AS H ON DB.ID_Hemodialisis=H.ID_Hemodialisis LEFT JOIN Citas AS C ON H.ID_Cita=C.ID_Citas LEFT JOIN Usuario AS U ON C.ID_Paciente=U.IdUsuario WHERE H.ID_Hemodialisis="+"'"+req.params.ID_Hemodialisis+"'"+" AND DB.Periodo='Final'";
+   global.conexion.query(query, function(err, result, fields){
+   if(err) throw err;
+   console.log(result[0]);
+   if(result[0].Sexo_usuario="Masculino"){
+    if(result[0].Valor<=.9){
+     var IFG=result[0].Valor/.9; 
+     IFG=Math.pow(IFG,-.411);
+     IFG=IFG*141; 
+     var Today=moment().format('MM-DD-YYYY'), BornPatientDate=moment(result[0].Fecha_Nacimiento_usuario,'MM-DD-YYYY');
+      var diff = moment.preciseDiff(Today, BornPatientDate, true);
+      var age=Math.pow(.993,diff.years);
+      IFG=IFG*age;
+      IFG=trunc(IFG,3);
+      console.log(IFG);
+      var ToUpdate={IFG:IFG};
+      UpdatingIFG(result,ToUpdate);
+      res.json({bandera:true});
+    }else{
+      var IFG=result[0].Valor/.9; 
+     IFG=Math.pow(IFG,-1.209);
+     IFG=IFG*141; 
+     var Today=moment().format('MM-DD-YYYY'), BornPatientDate=moment(result[0].Fecha_Nacimiento_usuario,'MM-DD-YYYY');
+      var diff = moment.preciseDiff(Today, BornPatientDate, true);
+      var age=Math.pow(.993,diff.years);
+      IFG=IFG*age;
+      IFG=trunc(IFG,3);
+      console.log(IFG);
+      var ToUpdate={IFG:IFG};
+      UpdatingIFG(result,ToUpdate);
+      res.json({bandera:true});
+    }
+   }else{
+     if(result[0].Valor<=.7){
+     var IFG=result[0].Valor/.7; 
+     IFG=Math.pow(IFG,-.309);
+     IFG=IFG*141; 
+     var Today=moment().format('MM-DD-YYYY'), BornPatientDate=moment(result[0].Fecha_Nacimiento_usuario,'MM-DD-YYYY');
+      var diff = moment.preciseDiff(Today, BornPatientDate, true);
+      var age=Math.pow(.993,diff.years);
+      IFG=IFG*age;
+      IFG=trunc(IFG,3);
+      console.log(IFG);
+      var ToUpdate={IFG:IFG};
+      UpdatingIFG(result,ToUpdate);
+      res.json({bandera:true});
+    }else{
+      var IFG=result[0].Valor/.7; 
+     IFG=Math.pow(IFG,-1.209);
+     IFG=IFG*141; 
+     var Today=moment().format('MM-DD-YYYY'), BornPatientDate=moment(result[0].Fecha_Nacimiento_usuario,'MM-DD-YYYY');
+      var diff = moment.preciseDiff(Today, BornPatientDate, true);
+      var age=Math.pow(.993,diff.years);
+      IFG=IFG*age;
+      IFG=trunc(IFG,3);
+      console.log(IFG);
+      var ToUpdate={IFG:IFG};
+      UpdatingIFG(result,ToUpdate);
+      res.json({bandera:true});
+    }
+   }
+  });
+ });
+ router.get('/UpdateGrid',function(req,res,next){
+  
+    global.io.sockets.emit('messages', "Actualizate");
+
+ });
+router.post('/SessionStart/:ID_Hemodialisis',function(req,res,next){
+  Id_Hemo=req.params;
+  periodo="Inicial";
+  var ToUpdate={InicioCreatinina:1};
+    global.conexion.update('Hemodialisis',ToUpdate,{ID_Hemodialisis:{operator:'=', value:req.params.ID_Hemodialisis}},function(err, response) {
+      if(err) throw err;
+      return res.json({bandera:true});
+    });
+ });
+ router.post('/SessionEnd/:ID_Hemodialisis',function(req,res,next){
+  Id_Hemo=req.params;
+  periodo="Final";
+  var ToUpdate={FinCreatinina:1};
+    global.conexion.update('Hemodialisis',ToUpdate,{ID_Hemodialisis:{operator:'=', value:req.params.ID_Hemodialisis}},function(err, response) {
+      if(err) throw err;
+      return res.json({bandera:true});
+    });
+ });
+//====================================================================
 //=============================Medicine===============================
   router.get('/GettingMedicalInfo',function(req, res){
    var query="SELECT * FROM Medicamento";
@@ -241,6 +402,20 @@ router.post('/NewAntroData/AntroData',function(req,res,next){
      res.json({bandera:true});
    });
   });
+   router.post('/UpdateMedicineDuringHemo/MedicineData', function(req,res,next){
+   var Medicine={ID_Hemodialisis:req.body.ID_Hemodialisis, ID_Medicamento:req.body.ID_Medicamento,Descripcion:req.body.Descripcion};
+   global.conexion.update('MedicinaHemodialisis', Medicine,{ID_MedicinaHemodialisis:{operator:'=', value:req.body.ID_MedicinaHemodialisis}},function(err, response){
+     if(err) throw err;
+     res.json({bandera:true});
+   });
+  });
+   router.post('/DeletingMedicine/:ID_MedicinaHemodialisis',function(req, res, next){
+  var query="DELETE FROM MedicinaHemodialisis WHERE ID_MedicinaHemodialisis="+"'"+req.params.ID_MedicinaHemodialisis+"'";
+  global.conexion.query(query,function(err, result,fields){
+   if(err) throw err;
+   res.json({bandera:true});
+  });
+});
   router.get('/GettingActualMedicine/:ID_Hemodialisis/',function(req,res){
  var query="SELECT * FROM `MedicinaHemodialisis` AS H INNER JOIN Medicamento AS M ON H.ID_Medicamento=M.ID_Medicamento WHERE H.ID_Hemodialisis="+"'"+req.params.ID_Hemodialisis+"'"
  global.conexion.query(query, function(err, result, fields){
@@ -254,6 +429,7 @@ router.post('/NewAntroData/AntroData',function(req,res,next){
     res.json(result);
  });
 });
+
 //====================================================================
 
 //==========SupportFunctions==========================================
@@ -356,6 +532,19 @@ function CheckingExistingDates(DataFromForm,AllData){
 
     }
      }
+     function trunc (x, posiciones = 0) {
+  var s = x.toString()
+  var l = s.length
+  var decimalLength = s.indexOf('.') + 1
+  var numStr = s.substr(0, decimalLength + posiciones)
+  return Number(numStr)
+}
+async function UpdatingIFG(result, IFG){
+  global.conexion.update('Datos_Bioquimicos_Sistema',IFG,{ID_Bioquimicos_Sistema:{operator:'=', value:result[0].ID_Bioquimicos_Sistema}},function(err, response) {
+      if(err) throw err;
+      });
+}
+
 //==========HARDWARE==================================================
 
 router.get('/HardwareOrder', function(req, res, next) {
@@ -367,7 +556,9 @@ router.get('/HardwareOrder', function(req, res, next) {
 
 
 
-
+/*NOMBRE DE LA FUNCIÓN 
+  PARÁMETROS (SI ES QUE TIENE)
+  DESCRIPCIÓN DE LA FUNCIÓN*/
 
 
 

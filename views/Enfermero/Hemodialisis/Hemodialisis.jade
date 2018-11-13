@@ -2,6 +2,7 @@ extends ../../layout
 block content
 	include ../barraEnf
 	</br></br>
+	script(src="/socket.io/socket.io.js")
 	script(src='/javascripts/Enfermero/Hemodialisis/Hemodialisis.js')
 	body.dx-viewport
 		div.content-article(style='white-space:pre;')
@@ -27,6 +28,7 @@ block content
 									<br>
 									.SfButtonCreate1(dx-button="SfButtonCreateA")
 									.SfButtonUpdate1(dx-button="SfButtonUpdateA")
+								<br>
 								.sf-form-container2
 									h3 Medicamentos usados en sesión de hemodiálisis
 									.widget-container
@@ -34,6 +36,18 @@ block content
 									#form(dx-form="formOptionsMedicine")
 									<br>
 									.SfButtonCreate2(dx-button="SfButtonCreateM")
+									.SfButtonUpdate2(dx-button="SfButtonUpdateM")
+								.popup(dx-popup="popupCreatinina")
+									div(data-options="dxTemplate: { name:'info' }")
+										.widget-container
+										#gridContainer(dx-data-grid="dataGridCreatinina")
+										<br>
+										table
+											tr
+												td
+													div(dx-button="InicioCreatinina")
+												td
+													div(dx-button="FinCreatinina")
 								.widget-container
 									#gridContainer(dx-data-grid="dataGridMoreInfo")
 									<br>
@@ -44,6 +58,7 @@ block content
 									h4 Antropometría
 									<br>
 									#gridContainer(dx-data-grid="dataGridAntroInfo")
+									<br>
 									h4 Medicinas usadas durante la sesión 
 									<br>
 									#gridContainer(dx-data-grid="dataGridMedicines")
@@ -59,6 +74,10 @@ block content
 											div(dx-button="showFormAuxDatosAntro")
 										td
 											div(dx-button="showFormAuxMedicine")
+										td
+											div(dx-button="showFormAuxCreatinina")
+										td
+											div(dx-button="FinishSession")
 					#gridContainer(dx-data-grid="dataGridOptions")
 				
 			

@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var underscore=require('underscore');
+var session_handler=require('./manejador_sesiones');
+var _SESSION;
 /* GET home page. */
 router.get('/index', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -58,7 +60,7 @@ router.post('/NewHealtyRegistry/HealtyData', function(req, res, next) {
 
 //VERIFYING AT INSERT DATA
 function FindingDuplicateDataInserting(DataFromForm,AllData){
-var banderaCedula=true,banderaLicencia=true,banderaCorreo=true; 
+  var banderaCedula=true,banderaLicencia=true,banderaCorreo=true; 
   //Verificamos Cédula 
   var DataOne = underscore.findWhere(AllData,{ID_Cedula_Profesional:DataFromForm.ID_Cedula_Profesional});
   if(DataOne!=undefined){
@@ -88,9 +90,8 @@ var banderaCedula=true,banderaLicencia=true,banderaCorreo=true;
 
 //inserting a medical speciality
 async function insertingSpeciality(data){
-console.log("especialidad")
-console.log(data);
-global.conexion.insert('Especialidad', data, function(err, response) {
+
+ global.conexion.insert('Especialidad', data, function(err, response) {
     if (err) throw err;
     console.log("Correcto especialidad insertada");
   });
@@ -160,7 +161,7 @@ async function UpdateHealtyPersonalInformation(DataFromForm){
 }
 
 function FindingDuplicateData(DataFromForm,AllData){
-var banderaCedula=true,banderaLicencia=true,banderaCorreo=true; 
+  var banderaCedula=true,banderaLicencia=true,banderaCorreo=true; 
   //Verificamos Cédula 
   var DataOne = underscore.findWhere(AllData,{ID_Cedula_Profesional:DataFromForm.ID_Cedula_Profesional});
   if(DataOne!=undefined){
@@ -197,8 +198,8 @@ router.post('/DeleteHealtyPersonalInformation/HealtyData', function(req, res, ne
 });
 //junk
 function GettingAllDataUsersWithId(){
-var dataToReturn;
-var query='SELECT MAX(IdUsuario) AS MAX FROM Usuario'
+ var dataToReturn;
+ var query='SELECT MAX(IdUsuario) AS MAX FROM Usuario'
   console.log(query);
   mysqlJson.query(query, function (err, result, fields) {
     if (err) throw err;
@@ -215,18 +216,29 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/loginStart/loginData', function(req, res, next) {
-	 var username=req.body.Nombre_Usuario;
+   console.log ("------------------");
+   console.log ("sesion");
+   console.log (req.session);
+	 var username=req.body.Correo_usuario;
 	 var pass = req.body.Contrasena;
    console.log(req.body);
-   var query='SELECT * FROM Usuario WHERE Nombre_Usuario='+"'"+username+"'"+" AND Contrasena="+"'"+pass+"'";
+   var query='SELECT * FROM Usuario WHERE Correo_usuario='+"'"+username+"'"+" AND Contrasena="+"'"+pass+"'";
    console.log(query);
   global.conexion.query(query, function (err, result, fields) {
     if (err) throw err;
-   var LoginData=underscore.findWhere(result,{Nombre_Usuario:username,Contrasena:pass});
-   console.log(LoginData);
-   //res.json(result[0]);
+    console.log(result);
+    var bandera=(result[0].Correo_usuario==username && result[0].Contrasena==pass);
+    if(bandera){
+      _SESSION = req.session;
+      console.log(_SESSION);
+      _SESSION.Correo_usuario=result[0].Correo_usuario;
+      _SESSION.Contrasena=result[0].Contrasena;
+      console.log(_SESSION);
+     res.json(result);
+    }else{
+      res.json({bandera:false});
+    }
   });
-   // res.json({hola:"Polo"});
 
 });
 //===========================================================================

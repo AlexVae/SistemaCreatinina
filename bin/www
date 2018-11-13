@@ -45,7 +45,7 @@ var numberUsers=0;
 global.server.listen(3000, /*'192.168.1.4',*/function() {
   console.log('Servidor corriendo en http://localhost:3000');
 });
-var io = require('socket.io')(global.server);
+global.io = require('socket.io')(global.server);
 io.on('connection', function(socket) {
    var query="SELECT * FROM Usuario";
   global.conexion.query(query, function (err, result, fields) {

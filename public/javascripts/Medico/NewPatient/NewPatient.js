@@ -1038,6 +1038,7 @@ $scope.SfButtonCreate= {
             
             if (subformInstance.validate().isValid) {
                 var data = subformInstance.option("formData"), bandera = true;
+                data.Fecha_Nacimiento_usuario=moment(data.Fecha_Nacimiento_usuario).format('MM-DD-YYYY HH:mm');
                 console.log(data);
                 CreateNewPatient(data);
                 gridInstance.refresh();
@@ -1057,6 +1058,7 @@ $scope.SfButtonCreate= {
         onClick: function () {
             if (subformInstance.validate().isValid) {
                   var data = subformInstance.option("formData");
+                  data.Fecha_Nacimiento_usuario=moment(data.Fecha_Nacimiento_usuario).format('MM-DD-YYYY HH:mm');
                   UpdatingPatient(data);
                   gridInstance.refresh();
                   gridInstance.repaint();

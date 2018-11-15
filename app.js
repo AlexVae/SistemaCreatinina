@@ -9,6 +9,7 @@ var session         = require('express-session'); //Manejo con sesiones
 var indexRouter = require('./routes/index');
 var medicoRouter = require('./routes/medico');
 var enfermeroRouter = require('./routes/enfermero');
+var pacienteRouter=require('./routes/Paciente');
 var adminRouter = require('./routes/admin');
 var usersRouter = require('./routes/users');
 var jquery= require('jquery');
@@ -63,6 +64,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/Healty',medicoRouter);
 app.use('/Nurse',enfermeroRouter);
+app.use('/Patient',pacienteRouter);
 app.use(cookieParser());
 app.use(session({'resave':true, 'saveUninitialized' : true, 'secret' : 'Dacomp' })); //Manejo con sesiones
 // catch 404 and forward to error handler

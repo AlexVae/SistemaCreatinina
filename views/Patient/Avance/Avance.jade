@@ -1,0 +1,24 @@
+extends ../../layout
+block content
+	include ../barraPatient
+	</br></br>
+	script(src='/javascripts/Paciente/Avance/Avance.js')
+	body.dx-viewport
+		div.content-article(style='white-space:pre;')
+			article
+				h1 Mi creatinina mensual <br><br>
+				.Patient-Container(ng-app="AvanceApp",ng-controller="AvanceController")
+					.sf-form-container
+						div(data-options="dxTemplate: { name:'info' }")
+							.widget-container
+							a(href="#", onclick="slideFormContainer('none');"): i.lnr.lnr-cross(aria-hidden="true")
+							<br>
+							h2 Mi resumen mensual
+							#gridContainer(dx-data-grid="dataGridCreatinina")
+							<br>
+							#chart(dx-chart="chartOptions")
+					.popup(dx-popup="popupCreatinina")
+						div(data-options="dxTemplate: { name:'info' }")
+							.widget-container
+							#chart(dx-chart="chartOptions")
+					#gridContainer(dx-data-grid="dataGridOptions")

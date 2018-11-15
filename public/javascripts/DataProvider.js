@@ -37,6 +37,7 @@ var dataSource = [{
     cluster: 406
 }];
 var decision=[{Op:"Si", valor:"Si"},{Op:"No", valor:"No"}];
+var types = ["spline", "stackedspline", "fullstackedspline"];
 DevExpress.localization.loadMessages(
 
 {

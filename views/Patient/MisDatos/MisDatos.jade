@@ -1,0 +1,42 @@
+extends ../../layout
+block content
+	include ../barraPatient
+	</br></br>
+	script(src='/javascripts/Paciente/MisDatos/MisDatos.js')
+	body.dx-viewport
+		div.content-article(style='white-space:pre;')
+			article
+				h1 Mis datos personales
+				.Patient-Container(ng-app="MisDatosApp",ng-controller="MisDatosController")
+					.sf-form-container
+						div(data-options="dxTemplate: { name:'info' }")
+							.widget-container
+							a(href="#", onclick="slideFormContainer('none');"): i.lnr.lnr-cross(aria-hidden="true")
+							#form(dx-form="formOptions")
+							<br>
+							.SfButtonUpdate(dx-button="SfButtonUpdate")
+					.popup(dx-popup="popupEmergency")
+						div(data-options="dxTemplate: { name:'info' }")
+							.sf-form-container1
+								a(href="#", onclick="slideFormContainer('none1');"): i.lnr.lnr-cross(aria-hidden="true")
+								.widget-container
+								#form(dx-form="EmergencyForm")
+									<br><br>
+								<br>
+								.SfButtonCreate(dx-button="SfButtonCreateEmergency")
+								.SfButtonUpdate(dx-button="SfButtonUpdateEmergency")
+							div(dx-button="showFormAuxEmergency")
+							#gridContainer(dx-data-grid="dataGridEmergency")
+					.popup(dx-popup="popupSafetyInformation")
+						div(data-options="dxTemplate: { name:'info' }")
+							.sf-form-container1
+								a(href="#", onclick="slideFormContainer('none1');"): i.lnr.lnr-cross(aria-hidden="true")
+								.widget-container
+								#form(dx-form="SafetyForm")
+									<br><br>
+								<br>
+								.SfButtonCreate(dx-button="SfButtonCreateSafety")
+								.SfButtonUpdate(dx-button="SfButtonUpdateSafety")
+							div(dx-button="showFormAuxSafety")
+							#gridContainer(dx-data-grid="dataGridSafety")
+					#gridContainer(dx-data-grid="dataGridOptions")

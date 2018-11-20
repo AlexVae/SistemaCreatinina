@@ -77,4 +77,50 @@ router.get('/', function(req, res, next) {
    	 res.json(diff);
   });
 //====================================================================================
+//=======================================Recetas======================================
+  router.get('/MyMedicalRecipes', function(req, res, next) {
+  //res.render('Enfermero/Prueba', { title: 'Bienvenido', otroTexto: 'Medico' });
+
+  res.render('Patient/MisRecetas/MisRecetas', { title: 'Mis recetas', otroTexto: 'Enfermero' });
+  });
+  router.get('/GetSchetch/:Date', function(req, res, next) {
+   var Today=moment(req.params.Date,'MM-DD-YYYY');
+   var query="SELECT * FROM Citas AS C INNER JOIN Consultas AS CC ON C.ID_Citas=CC.ID_Cita INNER JOIN Usuario AS U ON U.IdUsuario=C.ID_Personal_Salud LEFT JOIN PersonalSalud AS PS ON U.IdUsuario=PS.ID_Personal_Salud WHERE CC.Receta=1 AND C.ID_Paciente=40"; //Se debe cambiar por la sesión
+   global.conexion.query(query,function(err,result,field){
+   	if (err) throw err;
+   	var ValueToGrid=[];
+   	result.forEach(function(element, index, array) {
+     var startD=moment(element.Fecha,'MM-DD-YYYY');
+    var diff = moment.preciseDiff(startD, Today, true);
+    if(Today.month()==startD.month()&&diff.years==0){
+     ValueToGrid[index]=element;
+    }
+   	});
+   	res.json(ValueToGrid);
+   });
+  });
+  router.get('/GetSchetchMedicine/:ID_Consultas',function(req,res,next){
+   var query="SELECT * FROM Consultas AS C INNER JOIN Recetado AS R ON C.ID_Consultas=R.idConsulta LEFT JOIN Medicamento AS M ON R.idMedicamento=M.ID_Medicamento INNER JOIN Citas AS CC ON C.ID_Cita=CC.ID_Citas WHERE CC.ID_Paciente=40"//Se debe cambiar por la sesión 
+   global.conexion.query(query, function(err,result,field){
+    if(err) throw err;
+    res.json(result);
+   });
+  });
+//====================================================================================
+//=====================================MisDatos=======================================
+  router.get('/MisDatosPersonales', function(req, res, next) {
+  //res.render('Enfermero/Prueba', { title: 'Bienvenido', otroTexto: 'Medico' });
+
+  res.render('Patient/MisDatos/MisDatos', { title: 'Mis datos', otroTexto: 'Enfermero' });
+  });
+  router.get('/GetMyData',function(req,res,next){
+   var query="SELECT * FROM Usuario AS U INNER JOIN Domicilio AS D ON U.IdUsuario=D.IdUsuario INNER JOIN Paciente AS P ON U.IdUsuario=P.ID_Paciente WHERE U.IdUsuario=40";//Se debe cambiar por la sesión 
+   global.conexion.query(query, function(err,result,field){
+    if(err) throw err;
+    res.json(result[0]);
+   });
+  });
+   
+
+//====================================================================================
 module.exports = router;

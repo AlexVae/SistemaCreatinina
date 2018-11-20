@@ -1,0 +1,15 @@
+extends ../../layout
+block content
+	include ../barraPatient
+	<br><br>
+	script(src='/javascripts/Paciente/MisRecetas/MisRecetas.js')
+	body.dx-viewport
+		div.content-article(style='white-space:pre;')
+			article
+				h1 Mis recetas
+				.Patient-Container(ng-app="RecetasApp",ng-controller="RecetasController")
+					.popup(dx-popup="popupRecetas")
+						div(data-options="dxTemplate: { name:'info' }")
+							.widget-container
+							#gridContainer(dx-data-grid="dataGridRecetas")
+					#gridContainer(dx-data-grid="dataGridOptions")

@@ -1,10 +1,8 @@
-var RegistroHealtyApp = angular.module('RegistroHealtyApp', ['dx']);
-RegistroHealtyApp.controller('RegistroHealtyController', function DemoController($scope,$http) {
-    var subformInstance,formInstanceEmergency,formInstanceSafety, healtyData,IDUsuarioCache,CedulaCache,correoCache,licenciaCache,banderaPop=false,Emergency,HealtyInfo,gridInstance=null ,gridInstanceEmergency=null,gridInstanceSafety=null,IdEmergencia=0;
-/*setInterval(function(){ gridInstance.refresh();
-                gridInstance.repaint(); }, 3000);*/
-    //Formulario de registro nuevo personal de salud
-$scope.formOptions = {
+var MisDatosApp = angular.module('MisDatosApp', ['dx']), FechaSeleccionada;
+var subformInstance,Emergency,gridInstanceInfo,gridInstanceEmergency,gridInstanceSafety,IdEmergenciaa,formInstanceEmergency;
+MisDatosApp.controller('MisDatosController', function DemoController($scope,$http) {
+  //================================Formulario=================================
+    $scope.formOptions = {
         colCount: 4,
         labelLocation: "top",
         validationGroup: "employeesData",
@@ -411,12 +409,7 @@ $scope.formOptions = {
                     valueExpr: "ID_Contacto_Emergencia", dropDownButtonTemplate: function (fut) {
                         return $("<button >", { class: "lnr lnr-user" }).on('click', function (evt) {
                          //   formInstance.resetValues();
-                         if(banderaPop){
-                             $scope.showInfo();
-                         }else{
-                            DevExpress.ui.dialog.alert("Para dar de alta un contacto de emergencia se debe de dar de alta el paciente primero", "Error.");
-                         
-                         }
+                         $scope.showInfo();
                            
                              
                         })
@@ -440,13 +433,7 @@ $scope.formOptions = {
                     valueExpr: "ID_Numero_Poliza", dropDownButtonTemplate: function (fut) {
                         return $("<button >", { class: "lnr lnr-inbox" }).on('click', function (evt) {
                          //   formInstance.resetValues();
-                         if(banderaPop){
-                            $scope.showInfoSafety();
-                         }else{
-                            DevExpress.ui.dialog.alert("Para dar de alta un seguro se debe de dar de alta el paciente primero", "Error.");
-                         
-                         }
-                            
+                          $scope.showInfoSafety();
                              
                         })
                     }
@@ -458,25 +445,8 @@ $scope.formOptions = {
                 }]*///fin de reglas de validación de compañía
             }
         ]
-    };
-    /////////////////////////////////////////////SUB-Catálogo de contacto de emergencia
-$scope.visiblePopup = false;
-$scope.showInfo = function () {
-        $scope.visiblePopup = true;
-    };
-$scope.popupEmergency = {
-        width: "90%",
-        height: "90%",
-        contentTemplate: "info",
-        showTitle: true,
-        title: "Crear contacto de emergencia",
-        dragEnabled: false,
-       // closeOnOutsideClick: true,
-        bindingOptions: {
-            visible: "visiblePopup",
-        }
-    };
- $scope.EmergencyForm = {
+       };
+    $scope.EmergencyForm = {
         colCount: 4,
         labelLocation: "top",
         validationGroup: "EmergencyForm",
@@ -603,24 +573,7 @@ $scope.popupEmergency = {
             }
         ]
     };
-////////////////////////////////////////////////Subcatálogo de información de aseguradora
-$scope.visiblePopupSafety = false;
-$scope.showInfoSafety = function () {
-        $scope.visiblePopupSafety = true;
-    };
-$scope.popupSafetyInformation = {
-        width: "90%",
-        height: "90%",
-        contentTemplate: "info",
-        showTitle: true,
-        title: "Números de seguro al paciente",
-        dragEnabled: false,
-       // closeOnOutsideClick: true,
-        bindingOptions: {
-            visible: "visiblePopupSafety",
-        }
-    };
-$scope.SafetyForm = {
+    $scope.SafetyForm = {
         colCount: 4,
         labelLocation: "top",
         validationGroup: "SafetyForm",
@@ -689,9 +642,44 @@ $scope.SafetyForm = {
             }
         ]
     };
-/////////////////////////////////////////////////Sacamos la información 
-var Patients =  new DevExpress.data.CustomStore({
-        load: function () {
+  //===========================================================================
+  //================================Popup======================================
+      $scope.visiblePopup = false;
+      $scope.showInfo = function () {
+           $scope.visiblePopup = true;
+       };
+      $scope.popupEmergency = {
+           width: "90%",
+           height: "90%",
+           contentTemplate: "info",
+           showTitle: true,
+           title: "Crear contacto de emergencia",
+           dragEnabled: false,
+          // closeOnOutsideClick: true,
+           bindingOptions: {
+               visible: "visiblePopup",
+           }
+       };
+       $scope.visiblePopupSafety = false;
+      $scope.showInfoSafety = function () {
+        $scope.visiblePopupSafety = true;
+        };
+      $scope.popupSafetyInformation = {
+        width: "90%",
+        height: "90%",
+        contentTemplate: "info",
+        showTitle: true,
+        title: "Números de seguro al paciente",
+        dragEnabled: false,
+       // closeOnOutsideClick: true,
+        bindingOptions: {
+            visible: "visiblePopupSafety",
+        }
+    };
+  //===========================================================================
+  //================================Peticiones=================================
+      var Mine =  new DevExpress.data.CustomStore({
+          load: function () {
             //showLoader();
             return $http({
                 crossDomain: true,
@@ -700,14 +688,15 @@ var Patients =  new DevExpress.data.CustomStore({
                     'Content-Type': undefined
                 },
                 async: false,
-                url: "http://localhost:3000/Healty/GetAllPatientsInformation/",
+                url: "http://localhost:3000/Patient/GetMyData",
                 data: { symbol: 'ctsh' },
                 dataType: "jsonp",
                 jsonpCallback: 'fnsuccesscallback'
             })
                 .then(function (response) {
+                   // clinicos=response.data.Clinicos;
                    // disableLoader();
-                     console.log(response.data);
+                     //console.log(response.data);
                     return { data: response.data };
                 }, function (response) {
                     //disableLoader();
@@ -717,9 +706,9 @@ var Patients =  new DevExpress.data.CustomStore({
         remove: function (key) {
             DeleteProduct(key);
         }
-    });
-var EmergencyContactsPatient =  new DevExpress.data.CustomStore({
-        load: function () {
+       });
+      var EmergencyContactsPatient =  new DevExpress.data.CustomStore({
+          load: function () {
             //showLoader();
             return $http({
                 crossDomain: true,
@@ -728,7 +717,7 @@ var EmergencyContactsPatient =  new DevExpress.data.CustomStore({
                     'Content-Type': undefined
                 },
                 async: false,
-                url: "http://localhost:3000/Healty/GettingEmergency/"+IdEmergencia,
+                url: "http://localhost:3000/Healty/GettingEmergency/"+IdEmergenciaa,
                 data: { symbol: 'ctsh' },
                 dataType: "jsonp",
                 jsonpCallback: 'fnsuccesscallback'
@@ -745,9 +734,9 @@ var EmergencyContactsPatient =  new DevExpress.data.CustomStore({
         remove: function (key) {
             DeleteProduct(key);
         }
-    });
-var SafetyPatientsInformation =  new DevExpress.data.CustomStore({
-        load: function () {
+      });
+     var SafetyPatientsInformation =  new DevExpress.data.CustomStore({
+          load: function () {
             //showLoader();
             return $http({
                 crossDomain: true,
@@ -756,7 +745,7 @@ var SafetyPatientsInformation =  new DevExpress.data.CustomStore({
                     'Content-Type': undefined
                 },
                 async: false,
-                url: "http://localhost:3000/Healty/GettingSafety/"+IdEmergencia,
+                url: "http://localhost:3000/Healty/GettingSafety/"+IdEmergenciaa,
                 data: { symbol: 'ctsh' },
                 dataType: "jsonp",
                 jsonpCallback: 'fnsuccesscallback'
@@ -773,105 +762,40 @@ var SafetyPatientsInformation =  new DevExpress.data.CustomStore({
         remove: function (key) {
             DeleteProduct(key);
         }
-    });
-///////////////////////////////////////////////////////Grids de la vista
-//Grid Principal
-$scope.dataGridOptions = {
-        dataSource: Patients,
-         onInitialized: function (e) {
-            gridInstance = e.component;
+        });
+  //===========================================================================  
+  //==================================Grid=====================================
+       $scope.dataGridOptions={
+       dataSource: Mine,
+       noDataText: "No hay información para mostrar.",
+       onInitialized: function (e) {
+            gridInstanceInfo = e.component;
         },
-
-          columnChooser: {
-            enabled: true,
-            title: 'Selección de columna',
-            emptyPanelText: 'Se arrastra una comlumna aquí'
-        },
-         groupPanel: {
-            emptyPanelText: "Agrupar",
-            visible: "true"
+        onRowClick: function(e){
+        	IdEmergenciaa=e.data.IdUsuario;
+            subformInstance.updateData(e.data);
+            refreshingEmergencyBox(e.data.IdUsuario);
+            refreshingHealtyBox();
+        	slideFormContainer('block','edit');
         },
         columnAutoWeigth: true,
         columnAutoWidth: true,
-         "export": {
-            enabled: true,
-            fileName: "HistorialDePacientesHospital",
-            allowExportSelectedData: true,
-            placeholder: 'Exportar archivo'
-        },
-         paging: {
-            pageSize: 3
-        }, searchPanel: {
+        searchPanel: {
             placeholder:"Buscar...",
             visible: true,
             highlightCaseSensitive: true
-        },
-       columns: [{ caption: "Nombre", dataField: "Nombre_Usuario",alignment: 'center' },
-             { caption: "Apellido Paterno", dataField: "Apellido_Paterno_usuario",alignment: 'center' },
-             { caption: "Apellido Materno", dataField: "Apellido_Materno_usuario",alignment: 'center' },
-             {caption:"Teléfono fijo", dataField:"Numero_Telefonico_usuario",alignment:"center"},
-             {caption:"Celular", dataField:"Numero_Celular_usuario", alignment:"center"},
-             {caption:"Correo", dataField:"Correo_usuario",alignment:"center"},
-             {
-                dataField: "Más información o modificar datos",
-                cellTemplate: function (container, options) {
-                    $("<div>")
-                        .append('<button class="btn btn-default" ><i class="fa fa-floppy-o" aria-hidden="true"></i></button>').on('click', function (evt) {
-
-                            slideFormContainer("block", "edit");
-                            var auxiliar;
-                            //
-
-                            subformInstance.updateData(options.data);
-                            IdEmergencia=options.data.ID_Paciente;
-                            refreshingEmergencyBox();
-                            refreshingHealtyBox();
-                            banderaPop=true;
-                            try{
-                            gridInstanceEmergency.refresh();
-                            gridInstanceEmergency.repaint();
-                            gridInstanceSafety.refresh();
-                            gridInstanceSafety.repaint();
-                            }catch(err){
-          
-                            }
-                            
-                            //
-                          /*var Emergency= GettingAllEmergencyData(options.data.ID_Paciente);
-                           console.log(Emergency);
-
-                            subformInstance._editorInstancesByField.ID_Contacto_Emergencia.option("items", Emergency);
-                           //console.log(options.data);
-                            subformInstance.updateData(options.data);*/
-                          
-                            
-                        })
-                        .appendTo(container);
-                },alignment:"center"
-
-            }, {
-                dataField: "Eliminar",
-                cellTemplate: function (container, e) {
-                    $("<div>")
-                        .append('<button class="btn btn-default"> <i class="fa fa-trash"></i></button>').on('click', function (evt) {
-                            var result = DevExpress.ui.dialog.confirm("¿Se requiere eliminar este registro?", "Se necesita una confirmación...");
-                            result.done(function (dialogResult) {
-                                if (dialogResult == true) {
-                                    DeleteEmployee(e.data.EmployeeId, e.data.Name, e.data.PaternalLastName, e.data.MaternalLastName, e.data.CompanyId, e.data.SmartFlowTagId, e.data.NoEmployee);
-                                }
-                            
-                            });
-                           
-
-                        })
-                        .appendTo(container);
-                },alignment:"center"
-
-            }],
-       showBorders: true
-    };
-//Grid Emergency
-$scope.dataGridEmergency = {
+        },columns: [
+         { caption: "Nombre", dataField: "Nombre_Usuario",alignment: 'center' },
+         { caption: "Apellido paterno", dataField: "Apellido_Paterno_usuario",alignment: 'center' },
+         {caption:  "Apellido materno", dataField: "Apellido_Materno_usuario",alignment:'center'},
+         {caption:  "Sexo", dataField:"Sexo_usuario",alignment:'center'},
+         {caption:  "Estado civil", dataField:"Estado_Civil_usuario", alignment:'center'},
+         {caption:  "Teléfono principal usuariio", dataField:"Numero_Telefonico_usuario", alignment:'center'},
+         {caption: "Teléfono celular", dataField:"Numero_Celular_usuario", alignment:'center'}
+        ],
+             showBorders: true
+       };
+       $scope.dataGridEmergency = {
         dataSource: EmergencyContactsPatient,
          onInitialized: function (e) {
             gridInstanceEmergency = e.component;
@@ -948,10 +872,8 @@ $scope.dataGridEmergency = {
 
             }],
        showBorders: true
-    };
-
-//Grid Safety
-$scope.dataGridSafety = {
+       };
+       $scope.dataGridSafety = {
         dataSource: SafetyPatientsInformation,
          onInitialized: function (e) {
             gridInstanceSafety = e.component;
@@ -1026,31 +948,28 @@ $scope.dataGridSafety = {
 
             }],
        showBorders: true
-    };
+       };
+  //===========================================================================
 
-//============================Botones formulario principal==================================
- $scope.SfButtonCreate= {
-        text: "Registrar",
-        type: "success",
-        useSubmitBehavior: true,
-        validationGroup: "employeesData",
-        onClick: function () {
-            
-            if (subformInstance.validate().isValid) {
-                var data = subformInstance.option("formData"), bandera = true;
-                data.Fecha_Nacimiento_usuario=moment(data.Fecha_Nacimiento_usuario).format('MM-DD-YYYY HH:mm');
-                console.log(data);
-                CreateNewPatient(data);
-                gridInstance.refresh();
-                gridInstance.repaint();
-               // NewHealtyPersonal(data);
-                //subformInstance.resetValues();
-                 //RefreshDatagrid();
-              //  DevExpress.ui.dialog.alert("Funciono.", "Prueba");
-            }
+  //==================================Botones==================================
+     $scope.showFormAuxEmergency = {
+        text: "Crear nuevo",
+        icon: 'lnr lnr-users',
+        onClick: function (e) {
+            formInstanceEmergency.resetValues();
+           slideFormContainer("block1", "create");
         }
-    };
- $scope.SfButtonUpdate = {
+     };
+     $scope.showFormAuxSafety = {
+        text: "Crear nuevo",
+        icon: 'lnr lnr-users',
+        onClick: function (e) {
+            formInstanceSafety.resetValues();
+           slideFormContainer("block1", "create");
+        }
+      };
+
+     $scope.SfButtonUpdate = {
         text: "Actualizar",
         type: "default",
         useSubmitBehavior: true,
@@ -1060,13 +979,12 @@ $scope.dataGridSafety = {
                   var data = subformInstance.option("formData");
                   data.Fecha_Nacimiento_usuario=moment(data.Fecha_Nacimiento_usuario).format('MM-DD-YYYY HH:mm');
                   UpdatingPatient(data);
-                  gridInstance.refresh();
-                  gridInstance.repaint();
+                  gridInstanceInfo.refresh();
+                  gridInstanceInfo.repaint();
             }
         }
-    };
-    //Botones formulario de registro de contactos de emergencia 
-    $scope.SfButtonCreateEmergency={
+      };
+     $scope.SfButtonCreateEmergency={
        text: "Registrar",
         type: "success",
         useSubmitBehavior: true,
@@ -1080,14 +998,14 @@ $scope.dataGridSafety = {
                 CreateNewEmergencyContact(data);
                 gridInstanceEmergency.refresh();
                 gridInstanceEmergency.repaint();
-                refreshingEmergencyBox();
+                refreshingEmergencyBox(IdEmergenciaa);
                  
             }
         }
 
-}
+      }
 
- $scope.SfButtonUpdateEmergency = {
+     $scope.SfButtonUpdateEmergency = {
         text: "Actualizar",
         type: "default",
         useSubmitBehavior: true,
@@ -1098,15 +1016,13 @@ $scope.dataGridSafety = {
                 UpdatingEmergencyContact(data);
                 gridInstanceEmergency.refresh();
                 gridInstanceEmergency.repaint();
-                refreshingEmergencyBox();
+                refreshingEmergencyBox(IdEmergenciaa);
                 
             }
         }
-    };
-
-//Botones el sub-catálogo de seguro médico
-$scope.SfButtonCreateSafety={
- text: "Registrar",
+       };
+     $scope.SfButtonCreateSafety={
+       text: "Registrar",
         type: "success",
         useSubmitBehavior: true,
         validationGroup: "SafetyForm",
@@ -1114,7 +1030,7 @@ $scope.SfButtonCreateSafety={
             
             if (formInstanceSafety.validate().isValid) {
                 var data = formInstanceSafety.option("formData"), bandera = true;
-                data.ID_Paciente=IdEmergencia;
+                data.ID_Paciente=IdEmergenciaa;
                 CreatingNewHealtyInfo(data);
                 gridInstanceSafety.refresh();
                 gridInstanceSafety.repaint();
@@ -1122,32 +1038,28 @@ $scope.SfButtonCreateSafety={
             }
         }
 
-}
+      }
 
- $scope.SfButtonUpdateSafety = {
+      $scope.SfButtonUpdateSafety = {
         text: "Actualizar",
         type: "default",
         useSubmitBehavior: true,
         validationGroup: "SafetyForm",
         onClick: function () {
             if (formInstanceSafety.validate().isValid) {
-               var data = formInstanceSafety.option("formData"), bandera = true;
-                data.ID_Paciente=IdEmergencia;
+                var data = formInstanceSafety.option("formData"), bandera = true;
+                data.ID_Paciente=IdEmergenciaa;
                 UpdatingHealtyInfo(data);
                 gridInstanceSafety.refresh();
                 gridInstanceSafety.repaint();
                 refreshingHealtyBox();
-                
             }
         }
-    };
-
-
-//=======================================================================================
-//FUNCIONES PARA FORMULARIOS Y SUBFORMULARIOS
-//Refresh the EmergencyContact once that is changed something
-function refreshingEmergencyBox(){
-    var dataToGrid = $.ajax({
+         };
+  //===========================================================================
+  //===================================Apoyo===================================
+     function refreshingEmergencyBox(IdEmergencia){
+          var dataToGrid = $.ajax({
 
               type: 'GET',
 
@@ -1176,15 +1088,16 @@ function refreshingEmergencyBox(){
                 Emergency.forEach(function(element, index, array) {
                 Emergency[index].NameFamily=element.Nombre+" "+element.Parentesco_Paciente;
                
-        });
+        });     
+                //console.log(IdEmergencia);
                 subformInstance._editorInstancesByField.ID_Contacto_Emergencia.option("items", Emergency);
- }
-function refreshingHealtyBox(){
+      };
+      function refreshingHealtyBox(){
     var dataToGrid = $.ajax({
 
               type: 'GET',
 
-              url: "http://localhost:3000/Healty/GettingSafety/"+IdEmergencia,
+              url: "http://localhost:3000/Healty/GettingSafety/"+IdEmergenciaa,
 
               async: false,
 
@@ -1208,44 +1121,12 @@ function refreshingHealtyBox(){
                 HealtyInfo=dataToGrid.responseJSON;
                 subformInstance._editorInstancesByField.ID_Numero_Poliza.option("items", HealtyInfo);
  }
-$scope.showFormAux = {
-        text: "Crear nuevo",
-        icon: 'lnr lnr-users',
-        onClick: function (e) {
-            subformInstance.resetValues();
-           slideFormContainer("block", "create");
-           banderaPop=false;//Para el control de subcatalogos
-        }
-    };
-$scope.showFormAuxEmergency = {
-        text: "Crear nuevo",
-        icon: 'lnr lnr-users',
-        onClick: function (e) {
-            formInstanceEmergency.resetValues();
-           slideFormContainer("block1", "create");
-        }
-    };
-$scope.showFormAuxSafety = {
-        text: "Crear nuevo",
-        icon: 'lnr lnr-users',
-        onClick: function (e) {
-            formInstanceSafety.resetValues();
-           slideFormContainer("block1", "create");
-        }
-    };
+  //===========================================================================
 
-});
+
+
+
 
 
 
-function RefreshDatagrid() {
-
-    var dataGrid = $('#gridContainer').dxDataGrid('instance');
-
-    dataGrid.refresh();
-
-    dataGrid.repaint();
-
-}
- 
-/////////////////////////////////////
+});

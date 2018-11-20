@@ -612,6 +612,24 @@ async function UpdatingEmergencyContact(EmergencyInfo){
         
     }); 
 }
+async function UpdatingHealtyInfo(HealtyInfo){
+  $.post(AdressFrontServer+'/Healty/UpdatingHealtyInfo/'+'HealtyInfo',HealtyInfo, function (data) {
+    }).done(function (data) {
+     if(data.bandera==false){
+     NotificationError("Error: intente nuevamente.");
+      }else{
+     NotificationSuccess("Datos de seguro médico actualizados.");
+      slideFormContainer('none1');
+      }
+      
+    }).fail(function () {
+         NotificationError("Error al guardar empleado  " + HealtyData.Nombre_Usuario);
+
+    return false;
+    }).always(function () {
+        
+    }); 
+}
 //===============================SchetchDuler=================================
 async function InsertingClinicalInfo(ClinicalInfo){
   $.post(AdressFrontServer+'/Healty/NewClinicalInformation/'+'ClinicalInfo',ClinicalInfo, function (data) {

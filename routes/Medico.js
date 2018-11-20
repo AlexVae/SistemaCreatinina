@@ -122,6 +122,21 @@ router.post('/UpdatingEmergencyContact/EmergencyInfo', function(req,res,next){
     
   });
 });
+router.post('/UpdatingHealtyInfo/HealtyInfo', function(req,res,next){
+  var query="SELECT * FROM SeguroMedico";
+  global.conexion.query(query, function(err, result, fields){
+    if(err) throw err;
+    if(FindingDuplicateHealtyInfoUpdating(req.body,result)){
+        var HealtyToInsert={ID_Numero_Poliza:req.body.ID_Numero_Poliza,ID_Paciente:req.body.ID_Paciente,Nombre_Seguradora:req.body.Nombre_Seguradora.toUpperCase(),Cobertura_Seguradora:req.body.Cobertura_Seguradora.toUpperCase()};
+        global.conexion.update('SeguroMedico', HealtyToInsert, {ID_Poliza:{operator:'=', value:req.body.ID_Poliza}}, function(err, response){
+         if(err) throw err;
+         res.json({bandera:true});
+        });
+    }else{
+      res.json({bandera:false});
+    }
+  })
+});
 //===========================================================================
 //===============================================GETTIN ALL DATA FROM PATIENTS
 router.get('/GetAllPatientsInformation',function(req,res,next){
@@ -605,6 +620,20 @@ function FindingDuplicateHealtyInfo(DataFromForm,AllData){
     return true;
   }else{
     return false;
+  }
+}
+function FindingDuplicateHealtyInfoUpdating(DataFromForm,AllData){
+  var bandera1=true,bandera2=true;
+  var DataOne=underscore.findWhere(AllData,{ID_Numero_Poliza:DataFromForm.ID_Numero_Poliza});
+  if(DataOne!=undefined){
+    if(DataOne.ID_Poliza!=DataFromForm.ID_Poliza){
+        bandera1=false;
+       }
+  }
+  if(bandera1){
+    return true;
+  }else{
+    return false
   }
 }
 async function CheckingDates(data, AllData){
